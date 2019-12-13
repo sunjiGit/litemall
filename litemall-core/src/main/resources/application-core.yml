@@ -113,8 +113,8 @@ litemall:
     # 请参考 https://cloud.tencent.com/document/product/436/6249
     # 已购买
     tencent:
-      secretId: AKIDHQ1TpDaacVFoCVBuLrRwFQQGvOm0uxeA
-      secretKey: akmdK5lMdpqmZAa0GKCvGQQEqJbhcLtJ
+      secretId: AKIDDIDnEb2uoX6SuBnEy53pRSJ0XsINv3dj
+      secretKey: 500TD3qWwDJDev3zjLo5A3nOn1XtUzLr
       region: ap-shanghai
       bucketName: cos-test-bucket-1254385888
     # 七牛云对象存储配置信息
