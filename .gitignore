@@ -35,6 +35,7 @@ target/
 ### logs ####
 /logs/
 *.log
+log.file
 
 ### temp ignore ###
 *.cache
@@ -52,3 +53,4 @@ Servers
 .metadata
 upload
 gen_code
+*.sh

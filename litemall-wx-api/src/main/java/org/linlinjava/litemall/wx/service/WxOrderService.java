@@ -493,74 +493,93 @@ public class WxOrderService {
      * 2. 微信商户平台返回支付订单ID
      * 3. 设置订单付款状态
      *
+     *
+     * TODO 开发环境当作支付成功，完成订单状态
+     *
      * @param userId 用户ID
      * @param body   订单信息，{ orderId：xxx }
      * @return 支付订单ID
      */
     @Transactional
     public Object prepay(Integer userId, String body, HttpServletRequest request) {
-        if (userId == null) {
-            return ResponseUtil.unlogin();
-        }
+
+        // TODO // FIXME: 2019/12/14
         Integer orderId = JacksonUtil.parseInteger(body, "orderId");
-        if (orderId == null) {
-            return ResponseUtil.badArgument();
-        }
-
         LitemallOrder order = orderService.findById(orderId);
-        if (order == null) {
-            return ResponseUtil.badArgumentValue();
-        }
-        if (!order.getUserId().equals(userId)) {
-            return ResponseUtil.badArgumentValue();
-        }
-
-        // 检测是否能够取消
-        OrderHandleOption handleOption = OrderUtil.build(order);
-        if (!handleOption.isPay()) {
-            return ResponseUtil.fail(ORDER_INVALID_OPERATION, "订单不能支付");
+        if (order != null && OrderUtil.hasPayed(order)) {
+            String payId = System.currentTimeMillis() + "";
+            order.setPayId(payId);
+            order.setPayTime(LocalDateTime.now());
+            order.setOrderStatus(OrderUtil.STATUS_PAY);
+            orderService.updateWithOptimisticLocker(order);
         }
 
-        LitemallUser user = userService.findById(userId);
-        String openid = user.getWeixinOpenid();
-        if (openid == null) {
-            return ResponseUtil.fail(AUTH_OPENID_UNACCESS, "订单不能支付");
-        }
-        WxPayMpOrderResult result = null;
-        try {
-            WxPayUnifiedOrderRequest orderRequest = new WxPayUnifiedOrderRequest();
-            orderRequest.setOutTradeNo(order.getOrderSn());
-            orderRequest.setOpenid(openid);
-            orderRequest.setBody("订单：" + order.getOrderSn());
-            // 元转成分
-            int fee = 0;
-            BigDecimal actualPrice = order.getActualPrice();
-            fee = actualPrice.multiply(new BigDecimal(100)).intValue();
-            orderRequest.setTotalFee(fee);
-            orderRequest.setSpbillCreateIp(IpUtil.getIpAddr(request));
+        return ResponseUtil.ok(WxPayMpOrderResult.builder().build());
 
-            result = wxPayService.createOrder(orderRequest);
-
-            //缓存prepayID用于后续模版通知
-            String prepayId = result.getPackageValue();
-            prepayId = prepayId.replace("prepay_id=", "");
-            LitemallUserFormid userFormid = new LitemallUserFormid();
-            userFormid.setOpenid(user.getWeixinOpenid());
-            userFormid.setFormid(prepayId);
-            userFormid.setIsprepay(true);
-            userFormid.setUseamount(3);
-            userFormid.setExpireTime(LocalDateTime.now().plusDays(7));
-            formIdService.addUserFormid(userFormid);
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseUtil.fail(ORDER_PAY_FAIL, "订单不能支付");
-        }
-
-        if (orderService.updateWithOptimisticLocker(order) == 0) {
-            return ResponseUtil.updatedDateExpired();
-        }
-        return ResponseUtil.ok(result);
+        //TODO 待 商户可联调后使用。
+//
+//        if (userId == null) {
+//            return ResponseUtil.unlogin();
+//        }
+//        Integer orderId = JacksonUtil.parseInteger(body, "orderId");
+//        if (orderId == null) {
+//            return ResponseUtil.badArgument();
+//        }
+//
+//        LitemallOrder order = orderService.findById(orderId);
+//        if (order == null) {
+//            return ResponseUtil.badArgumentValue();
+//        }
+//        if (!order.getUserId().equals(userId)) {
+//            return ResponseUtil.badArgumentValue();
+//        }
+//
+//        // 检测是否能够取消
+//        OrderHandleOption handleOption = OrderUtil.build(order);
+//        if (!handleOption.isPay()) {
+//            return ResponseUtil.fail(ORDER_INVALID_OPERATION, "订单不能支付");
+//        }
+//
+//        LitemallUser user = userService.findById(userId);
+//        String openid = user.getWeixinOpenid();
+//        if (openid == null) {
+//            return ResponseUtil.fail(AUTH_OPENID_UNACCESS, "订单不能支付");
+//        }
+//        WxPayMpOrderResult result = null;
+//        try {
+//            WxPayUnifiedOrderRequest orderRequest = new WxPayUnifiedOrderRequest();
+//            orderRequest.setOutTradeNo(order.getOrderSn());
+//            orderRequest.setOpenid(openid);
+//            orderRequest.setBody("订单：" + order.getOrderSn());
+//            // 元转成分
+//            int fee = 0;
+//            BigDecimal actualPrice = order.getActualPrice();
+//            fee = actualPrice.multiply(new BigDecimal(100)).intValue();
+//            orderRequest.setTotalFee(fee);
+//            orderRequest.setSpbillCreateIp(IpUtil.getIpAddr(request));
+//
+//            result = wxPayService.createOrder(orderRequest);
+//
+//            //缓存prepayID用于后续模版通知
+//            String prepayId = result.getPackageValue();
+//            prepayId = prepayId.replace("prepay_id=", "");
+//            LitemallUserFormid userFormid = new LitemallUserFormid();
+//            userFormid.setOpenid(user.getWeixinOpenid());
+//            userFormid.setFormid(prepayId);
+//            userFormid.setIsprepay(true);
+//            userFormid.setUseamount(3);
+//            userFormid.setExpireTime(LocalDateTime.now().plusDays(7));
+//            formIdService.addUserFormid(userFormid);
+//
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            return ResponseUtil.fail(ORDER_PAY_FAIL, "订单不能支付");
+//        }
+//
+//        if (orderService.updateWithOptimisticLocker(order) == 0) {
+//            return ResponseUtil.updatedDateExpired();
+//        }
+//        return ResponseUtil.ok(result);
     }
 
     /**
