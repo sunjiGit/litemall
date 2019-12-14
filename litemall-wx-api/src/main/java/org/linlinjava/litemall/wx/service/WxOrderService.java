@@ -506,13 +506,17 @@ public class WxOrderService {
         // TODO // FIXME: 2019/12/14
         Integer orderId = JacksonUtil.parseInteger(body, "orderId");
         LitemallOrder order = orderService.findById(orderId);
-        if (order != null && OrderUtil.hasPayed(order)) {
+        logger.info("prepay order=" + order);
+        if (order != null && !OrderUtil.hasPayed(order)) {
             String payId = System.currentTimeMillis() + "";
             order.setPayId(payId);
             order.setPayTime(LocalDateTime.now());
             order.setOrderStatus(OrderUtil.STATUS_PAY);
-            orderService.updateWithOptimisticLocker(order);
+            int row = orderService.updateWithOptimisticLocker(order);
+            logger.info("prepay row=" + row);
         }
+        order = orderService.findById(orderId);
+        logger.info("prepay order=" + order);
 
         return ResponseUtil.ok(WxPayMpOrderResult.builder().build());
 
