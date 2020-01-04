@@ -511,6 +511,28 @@ CREATE TABLE `litemall_log` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
+-- Table structure for table `litemall_group_order`
+--
+
+DROP TABLE IF EXISTS `litemall_group_order`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `litemall`.`litemall_group_order` (
+  `id` INT(11) NOT NULL AUTO_INCREMENT COMMENT '主键',
+  `order_id` INT(11) NOT NULL COMMENT '订单ID',
+  `user_id` INT(11) NOT NULL COMMENT '用户ID',
+  `address` VARCHAR(127) NULL COMMENT '收货具体地址',
+  `start_time` DATETIME NULL COMMENT '拼单开始时间',
+  `end_time` DATETIME NULL COMMENT '拼单结束时间',
+  `confirm_time` DATETIME NULL COMMENT '拼单确认时间',
+  `add_time` DATETIME NULL COMMENT '创建时间',
+  `update_time` DATETIME NULL COMMENT '更新时间',
+  `deleted` TINYINT(1) NULL DEFAULT 0 COMMENT '逻辑删除',
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
 -- Table structure for table `litemall_order`
 --
 
@@ -541,6 +563,8 @@ CREATE TABLE `litemall_order` (
   `confirm_time` datetime DEFAULT NULL COMMENT '用户确认收货时间',
   `comments` smallint(6) DEFAULT '0' COMMENT '待评价订单商品数量',
   `end_time` datetime DEFAULT NULL COMMENT '订单关闭时间',
+  `group_ordered` tinyint(1) DEFAULT '0' COMMENT '是否拼单（0否，1是）',
+  `group_order_id` int(11) NOT NULL COMMENT '拼单ID',
   `add_time` datetime DEFAULT NULL COMMENT '创建时间',
   `update_time` datetime DEFAULT NULL COMMENT '更新时间',
   `deleted` tinyint(1) DEFAULT '0' COMMENT '逻辑删除',

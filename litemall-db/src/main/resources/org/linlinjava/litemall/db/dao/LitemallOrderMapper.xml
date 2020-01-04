@@ -29,6 +29,8 @@
     <result column="confirm_time" jdbcType="TIMESTAMP" property="confirmTime" />
     <result column="comments" jdbcType="SMALLINT" property="comments" />
     <result column="end_time" jdbcType="TIMESTAMP" property="endTime" />
+    <result column="group_ordered" jdbcType="BIT" property="groupOrdered" />
+    <result column="group_order_id" jdbcType="INTEGER" property="groupOrderId" />
     <result column="add_time" jdbcType="TIMESTAMP" property="addTime" />
     <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
     <result column="deleted" jdbcType="BIT" property="deleted" />
@@ -107,7 +109,7 @@
     id, user_id, order_sn, order_status, consignee, mobile, address, message, goods_price, 
     freight_price, coupon_price, integral_price, groupon_price, order_price, actual_price, 
     pay_id, pay_time, ship_sn, ship_channel, ship_time, confirm_time, comments, end_time, 
-    add_time, update_time, deleted
+    group_ordered, group_order_id, add_time, update_time, deleted
   </sql>
   <select id="selectByExample" parameterType="org.linlinjava.litemall.db.domain.LitemallOrderExample" resultMap="BaseResultMap">
     <!--
@@ -235,8 +237,9 @@
       order_price, actual_price, pay_id, 
       pay_time, ship_sn, ship_channel, 
       ship_time, confirm_time, comments, 
-      end_time, add_time, update_time, 
-      deleted)
+      end_time, group_ordered, group_order_id, 
+      add_time, update_time, deleted
+      )
     values (#{userId,jdbcType=INTEGER}, #{orderSn,jdbcType=VARCHAR}, #{orderStatus,jdbcType=SMALLINT}, 
       #{consignee,jdbcType=VARCHAR}, #{mobile,jdbcType=VARCHAR}, #{address,jdbcType=VARCHAR}, 
       #{message,jdbcType=VARCHAR}, #{goodsPrice,jdbcType=DECIMAL}, #{freightPrice,jdbcType=DECIMAL}, 
@@ -244,8 +247,9 @@
       #{orderPrice,jdbcType=DECIMAL}, #{actualPrice,jdbcType=DECIMAL}, #{payId,jdbcType=VARCHAR}, 
       #{payTime,jdbcType=TIMESTAMP}, #{shipSn,jdbcType=VARCHAR}, #{shipChannel,jdbcType=VARCHAR}, 
       #{shipTime,jdbcType=TIMESTAMP}, #{confirmTime,jdbcType=TIMESTAMP}, #{comments,jdbcType=SMALLINT}, 
-      #{endTime,jdbcType=TIMESTAMP}, #{addTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}, 
-      #{deleted,jdbcType=BIT})
+      #{endTime,jdbcType=TIMESTAMP}, #{groupOrdered,jdbcType=BIT}, #{groupOrderId,jdbcType=INTEGER}, 
+      #{addTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}, #{deleted,jdbcType=BIT}
+      )
   </insert>
   <insert id="insertSelective" parameterType="org.linlinjava.litemall.db.domain.LitemallOrder">
     <!--
@@ -323,6 +327,12 @@
       <if test="endTime != null">
         end_time,
       </if>
+      <if test="groupOrdered != null">
+        group_ordered,
+      </if>
+      <if test="groupOrderId != null">
+        group_order_id,
+      </if>
       <if test="addTime != null">
         add_time,
       </if>
@@ -399,6 +409,12 @@
       </if>
       <if test="endTime != null">
         #{endTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="groupOrdered != null">
+        #{groupOrdered,jdbcType=BIT},
+      </if>
+      <if test="groupOrderId != null">
+        #{groupOrderId,jdbcType=INTEGER},
       </if>
       <if test="addTime != null">
         #{addTime,jdbcType=TIMESTAMP},
@@ -497,6 +513,12 @@
       <if test="record.endTime != null">
         end_time = #{record.endTime,jdbcType=TIMESTAMP},
       </if>
+      <if test="record.groupOrdered != null">
+        group_ordered = #{record.groupOrdered,jdbcType=BIT},
+      </if>
+      <if test="record.groupOrderId != null">
+        group_order_id = #{record.groupOrderId,jdbcType=INTEGER},
+      </if>
       <if test="record.addTime != null">
         add_time = #{record.addTime,jdbcType=TIMESTAMP},
       </if>
@@ -540,6 +562,8 @@
       confirm_time = #{record.confirmTime,jdbcType=TIMESTAMP},
       comments = #{record.comments,jdbcType=SMALLINT},
       end_time = #{record.endTime,jdbcType=TIMESTAMP},
+      group_ordered = #{record.groupOrdered,jdbcType=BIT},
+      group_order_id = #{record.groupOrderId,jdbcType=INTEGER},
       add_time = #{record.addTime,jdbcType=TIMESTAMP},
       update_time = #{record.updateTime,jdbcType=TIMESTAMP},
       deleted = #{record.deleted,jdbcType=BIT}
@@ -620,6 +644,12 @@
       <if test="endTime != null">
         end_time = #{endTime,jdbcType=TIMESTAMP},
       </if>
+      <if test="groupOrdered != null">
+        group_ordered = #{groupOrdered,jdbcType=BIT},
+      </if>
+      <if test="groupOrderId != null">
+        group_order_id = #{groupOrderId,jdbcType=INTEGER},
+      </if>
       <if test="addTime != null">
         add_time = #{addTime,jdbcType=TIMESTAMP},
       </if>
@@ -660,6 +690,8 @@
       confirm_time = #{confirmTime,jdbcType=TIMESTAMP},
       comments = #{comments,jdbcType=SMALLINT},
       end_time = #{endTime,jdbcType=TIMESTAMP},
+      group_ordered = #{groupOrdered,jdbcType=BIT},
+      group_order_id = #{groupOrderId,jdbcType=INTEGER},
       add_time = #{addTime,jdbcType=TIMESTAMP},
       update_time = #{updateTime,jdbcType=TIMESTAMP},
       deleted = #{deleted,jdbcType=BIT}
