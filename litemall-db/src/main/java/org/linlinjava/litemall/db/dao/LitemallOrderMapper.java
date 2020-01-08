@@ -149,4 +149,6 @@ public interface LitemallOrderMapper {
      * @mbg.generated
      */
     int logicalDeleteByPrimaryKey(Integer id);
+
+    List<LitemallOrder> selectByGroupOrderId(Integer groupOrderId);
 }

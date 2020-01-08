@@ -756,4 +756,11 @@
     update litemall_order set deleted = 1
     where id = #{id,jdbcType=INTEGER}
   </update>
+
+  <select id="selectByGroupOrderId" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from litemall_order
+    when group_order_id = #{groupOrderId}
+  </select>
 </mapper>

@@ -6,16 +6,15 @@ import com.github.binarywang.wxpay.exception.WxPayException;
 import com.github.binarywang.wxpay.service.WxPayService;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.shiro.util.CollectionUtils;
 import org.linlinjava.litemall.core.notify.NotifyService;
 import org.linlinjava.litemall.core.notify.NotifyType;
 import org.linlinjava.litemall.core.util.JacksonUtil;
 import org.linlinjava.litemall.core.util.ResponseUtil;
-import org.linlinjava.litemall.db.domain.LitemallComment;
-import org.linlinjava.litemall.db.domain.LitemallOrder;
-import org.linlinjava.litemall.db.domain.LitemallOrderGoods;
-import org.linlinjava.litemall.db.domain.UserVo;
+import org.linlinjava.litemall.db.domain.*;
 import org.linlinjava.litemall.db.service.*;
 import org.linlinjava.litemall.db.util.OrderUtil;
+import org.omg.CORBA.PRIVATE_MEMBER;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,6 +25,7 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static org.linlinjava.litemall.admin.util.AdminResponseCode.*;
 
@@ -50,6 +50,8 @@ public class AdminOrderService {
     private NotifyService notifyService;
     @Autowired
     private LogHelper logHelper;
+    @Autowired
+    private LitemallGroupOrderService groupOrderService;
 
     public Object list(Integer userId, String orderSn, List<Short> orderStatusArray,
                        Integer page, Integer limit, String sort, String order) {
@@ -243,4 +245,68 @@ public class AdminOrderService {
         return ResponseUtil.ok();
     }
 
+    /**
+     * 拼单所有订单列表
+     *
+     * @param groupOrderId 拼单ID
+     * @return 订单操作结果
+     */
+    public Object listGroupOrderList(Integer groupOrderId) {
+        List<LitemallOrder> orderList = orderService.queryByGroupOrderId(groupOrderId);
+        // 拼单订单如果不是已付款，则不能发货
+        orderList = orderList.stream()
+                .filter(order -> order.getOrderStatus().equals(OrderUtil.STATUS_PAY))
+                .collect(Collectors.toList());
+        return ResponseUtil.okList(orderList);
+    }
+
+    /**
+     * 拼单发货
+     * 1. 检测当前订单是否能够发货
+     * 2. 设置订单发货状态
+     *
+     * @param body 订单信息，{ groupOrderId：xxx, shipSn: xxx, shipChannel: xxx }
+     * @return 订单操作结果
+     * 成功则 { errno: 0, errmsg: '成功' }
+     * 失败则 { errno: XXX, errmsg: XXX }
+     */
+    @Transactional
+    public Object shipGroupOrder(String body) {
+        Integer groupOrderId = JacksonUtil.parseInteger(body, "groupOrderId");
+        String shipSn = JacksonUtil.parseString(body, "shipSn");
+        String shipChannel = JacksonUtil.parseString(body, "shipChannel");
+        if (groupOrderId == null || shipSn == null || shipChannel == null) {
+            return ResponseUtil.badArgument();
+        }
+
+        List<LitemallOrder> orderList = orderService.queryByGroupOrderId(groupOrderId);
+        if (CollectionUtils.isEmpty(orderList)) {
+            return ResponseUtil.badArgumentNoData();
+        }
+
+        // 拼单订单如果不是已付款，则不能发货
+        for(LitemallOrder order : orderList) {
+            if (!order.getOrderStatus().equals(OrderUtil.STATUS_PAY)) {
+                logger.error(JacksonUtil.toJson(ResponseUtil.fail(ORDER_CONFIRM_NOT_ALLOWED, "订单不能确认收货")));
+                continue;
+            }
+
+            order.setOrderStatus(OrderUtil.STATUS_SHIP);
+            order.setShipSn(shipSn);
+            order.setShipChannel(shipChannel);
+            order.setShipTime(LocalDateTime.now());
+            if (orderService.updateWithOptimisticLocker(order) == 0) {
+                logger.error(JacksonUtil.toJson(ResponseUtil.updatedDateExpired()));
+                continue;
+            }
+
+            //TODO 发送邮件和短信通知，这里采用异步发送
+            // 发货会发送通知短信给用户:          *
+            // "您的订单已经发货，快递公司 {1}，快递单 {2} ，请注意查收"
+            notifyService.notifySmsTemplate(order.getMobile(), NotifyType.SHIP, new String[]{shipChannel, shipSn});
+
+            logHelper.logOrderSucceed("发货", "订单编号 " + order.getId());
+        }
+        return ResponseUtil.ok();
+    }
 }

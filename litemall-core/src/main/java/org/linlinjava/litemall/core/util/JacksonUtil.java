@@ -6,8 +6,11 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.linlinjava.litemall.db.domain.LitemallOrder;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -171,4 +174,23 @@ public class JacksonUtil {
         }
         return null;
     }
+
+//    public static void main(String[] args) {
+//        List<LitemallOrder> orderList = new ArrayList<>();
+//
+//        LitemallOrder order1 = new LitemallOrder();
+//        order1.setId(1);
+//        order1.setAddress("address");
+//        order1.setAddTime(LocalDateTime.now());
+//
+//        LitemallOrder order2 = new LitemallOrder();
+//        order2.setId(2);
+//        order2.setAddress("address2");
+//        order2.setAddTime(LocalDateTime.now());
+//
+//        orderList.add(order1);
+//        orderList.add(order2);
+//
+//        System.out.println(toJson(orderList));
+//    }
 }

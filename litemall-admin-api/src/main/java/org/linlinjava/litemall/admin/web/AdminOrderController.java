@@ -30,6 +30,8 @@ public class AdminOrderController {
     /**
      * 查询订单
      *
+     * 根据是否拼单 前端展示不同订单。
+     *
      * @param userId
      * @param orderSn
      * @param orderStatusArray
@@ -102,6 +104,34 @@ public class AdminOrderController {
     @PostMapping("/ship")
     public Object ship(@RequestBody String body) {
         return adminOrderService.ship(body);
+    }
+
+    /**
+     * 查询拼单的订单
+     *
+     * @param groupOrderId
+     * @return
+     */
+    @RequiresPermissions("admin:order:list")
+    @RequiresPermissionsDesc(menu = {"商场管理", "订单管理"}, button = "查询")
+    @GetMapping("/list_grp_odr_list")
+    public Object listGroupOrderList(@NotNull Integer groupOrderId) {
+        logger.info("listGroupOrderList");
+        return adminOrderService.listGroupOrderList(groupOrderId);
+    }
+
+    /**
+     * 拼单发货
+     *
+     * @param body 订单信息，{ groupOrderId：xxx, shipSn: xxx, shipChannel: xxx }
+     * @return 订单操作结果
+     */
+    @RequiresPermissions("admin:order:ship")
+    @RequiresPermissionsDesc(menu = {"商场管理", "订单管理"}, button = "订单发货")
+    @PostMapping("/ship_group_order")
+    public Object shipGroupOrder(@RequestBody String body) {
+        logger.info("shipGroupOrder");
+        return adminOrderService.shipGroupOrder(body);
     }
 
 
