@@ -39,6 +39,7 @@ public class WxGroupOrderController {
      * @param userId 用户ID
      * @param body   拼单信息，{ groupOrderId: XXX, orderId: XXX }
      * @return 提交拼单操作结果
+     * {..., "data":{"groupOrderId": XXX}}
      */
     @PostMapping("join_group_order")
     public Object joinGroupOrder(@LoginUser Integer userId, @RequestBody String body) {
@@ -51,6 +52,8 @@ public class WxGroupOrderController {
      * @param userId 用户ID
      * @param body   拼单信息，{ groupOrderId: XXX }
      * @return 提交拼单操作结果
+     * {..., "data":{"address": XXX}}
+     *
      */
     @PostMapping("get_grp_odr_address")
     public Object getGroupOrderAddress(@LoginUser Integer userId, @RequestBody String body) {
@@ -63,6 +66,7 @@ public class WxGroupOrderController {
      * @param userId 用户ID
      * @param body   拼单信息，{ groupOrderId: XXX }
      * @return 提交拼单操作结果
+     * {..., "data":{"total":9,"pages":1,"limit":10,"page":1,"list":[XXXX]}}
      */
     @PostMapping("get_grp_odr_list")
     public Object getGroupOrderList(@LoginUser Integer userId, @RequestBody String body) {
@@ -75,6 +79,7 @@ public class WxGroupOrderController {
      * @param userId 用户ID
      * @param body   拼单ID，{ groupOrderId: XXX }
      * @return 提交拼单操作结果
+     * {"errno":0,"errmsg":"成功"}
      */
     @PostMapping("confirm_grp_odr")
     @Deprecated
@@ -88,6 +93,7 @@ public class WxGroupOrderController {
      * @param userId 用户ID
      * @param body   拼单ID，{ groupOrderId: XXX }
      * @return 提交拼单操作结果
+     * {"errno":0,"errmsg":"成功"}
      */
     @PostMapping("cancel_grp_odr")
     @Deprecated

@@ -699,6 +699,26 @@ CREATE TABLE `litemall_storage` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
+-- Table structure for table `litemall_store`
+--
+
+DROP TABLE IF EXISTS `litemall_store`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `litemall_store` (
+  `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '主键ID',
+  `name` varchar(63)  NOT NULL COMMENT '名称',
+  `address_detail` varchar(127)  NOT NULL COMMENT '详细地址',
+  `longitude` varchar(16)  DEFAULT NULL COMMENT '经度',
+  `latitude` varchar(16)  DEFAULT NULL COMMENT '纬度',
+  `add_time` datetime DEFAULT NULL COMMENT '创建时间',
+  `update_time` datetime DEFAULT NULL COMMENT '更新时间',
+  `deleted` tinyint(1) DEFAULT '0' COMMENT '逻辑删除 0=未删 1=已删',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='门店表'
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
 -- Table structure for table `litemall_system`
 --
 

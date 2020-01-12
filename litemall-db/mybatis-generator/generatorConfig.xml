@@ -57,6 +57,9 @@
                              targetProject="src/main/java"/>
         <!--表名-->
 
+        <!--<table tableName="litemall_store">-->
+            <!--<generatedKey column="id" sqlStatement="MySql" identity="true"/>-->
+        <!--</table>-->
         <!--<table tableName="litemall_group_order">-->
             <!--<generatedKey column="id" sqlStatement="MySql" identity="true"/>-->
         <!--</table>-->
