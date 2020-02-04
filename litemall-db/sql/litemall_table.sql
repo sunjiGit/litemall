@@ -715,7 +715,7 @@ CREATE TABLE `litemall_store` (
   `update_time` datetime DEFAULT NULL COMMENT '更新时间',
   `deleted` tinyint(1) DEFAULT '0' COMMENT '逻辑删除 0=未删 1=已删',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='门店表'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='门店表';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
