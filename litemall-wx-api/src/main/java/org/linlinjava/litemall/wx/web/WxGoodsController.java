@@ -12,6 +12,7 @@ import org.linlinjava.litemall.db.domain.*;
 import org.linlinjava.litemall.db.service.*;
 import org.linlinjava.litemall.wx.annotation.LoginUser;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.CollectionUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -24,6 +25,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.*;
+import java.util.stream.Collectors;
 
 /**
  * 商品服务
@@ -225,6 +227,36 @@ public class WxGoodsController {
 		data.put("brotherCategory", children);
 		return ResponseUtil.ok(data);
 	}
+
+	/**
+	 * 根据大类搜素商品
+	 *
+	 * @param firstCategoryId 类目ID，可选
+	 * @param page       分页页数
+	 * @param limit      分页大小
+	 * @return 根据条件搜素的商品详情
+	 */
+	@GetMapping("listByFirstCategory")
+	public Object listByFirstCategory(
+			@NotNull Integer firstCategoryId,
+			@RequestParam(defaultValue = "1") Integer page,
+			@RequestParam(defaultValue = "50") Integer limit) {
+
+		// 查询商品所属类目列表。
+		List<LitemallCategory> categoryList = categoryService.queryByPid(firstCategoryId);
+		if (CollectionUtils.isEmpty(categoryList)) {
+			logger.info(String.format("no categoryList for firstCateId=%s", firstCategoryId));
+			return ResponseUtil.ok();
+		}
+
+		//查询列表数据
+		List<Integer> cateIds = categoryList.stream().map(LitemallCategory::getId).collect(Collectors.toList());
+		List<LitemallGoods> goodsList = goodsService.queryByCategory(cateIds, page, limit);
+
+		//TODO 太多商品时 考虑下一页 逻辑
+		return ResponseUtil.okList(goodsList);
+	}
+
 
 	/**
 	 * 根据条件搜素商品
