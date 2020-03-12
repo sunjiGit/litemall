@@ -703,21 +703,26 @@ CREATE TABLE `litemall_storage` (
 --
 
 DROP TABLE IF EXISTS `litemall_store`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `litemall_store` (
   `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '主键ID',
-  `name` varchar(63)  NOT NULL COMMENT '名称',
-  `address_detail` varchar(127)  NOT NULL COMMENT '详细地址',
-  `longitude` varchar(16)  DEFAULT NULL COMMENT '经度',
-  `latitude` varchar(16)  DEFAULT NULL COMMENT '纬度',
+  `name` varchar(63) NOT NULL COMMENT '名称',
+  `region_id` int(11) DEFAULT NULL COMMENT 'region地址id',
+  `address_detail` varchar(127) NOT NULL COMMENT '详细地址',
+  `longitude` varchar(16) DEFAULT NULL COMMENT '经度',
+  `latitude` varchar(16) DEFAULT NULL COMMENT '纬度',
+  `type` varchar(16) NOT NULL COMMENT '门店类型：TAKE_OUT-外面店，DINE_IN-堂食店',
+  `weekday_start` varchar(10) DEFAULT NULL COMMENT '工作日营业开始时间',
+  `weekday_end` varchar(10) DEFAULT NULL COMMENT '工作日结束时间',
+  `weekend_start` varchar(10) DEFAULT NULL COMMENT '周末营业时间',
+  `weekend_end` varchar(10) DEFAULT NULL COMMENT '周末打烊时间',
+  `status` varchar(16) DEFAULT NULL COMMENT '门店状态：WORKING-营业中，STOP-打烊',
+  `city_no` int(11) DEFAULT NULL COMMENT '门店所在城市的序号（开店号）',
+  `order_start_seq` int(11) DEFAULT NULL COMMENT '门店取餐码 初始号',
   `add_time` datetime DEFAULT NULL COMMENT '创建时间',
   `update_time` datetime DEFAULT NULL COMMENT '更新时间',
   `deleted` tinyint(1) DEFAULT '0' COMMENT '逻辑删除 0=未删 1=已删',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='门店表';
-/*!40101 SET character_set_client = @saved_cs_client */;
-
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COMMENT='门店表'
 --
 -- Table structure for table `litemall_system`
 --

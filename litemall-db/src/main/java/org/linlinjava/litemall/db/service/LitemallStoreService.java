@@ -27,6 +27,7 @@ public class LitemallStoreService {
     }
 
     public void add(LitemallStore store) {
+        store.setDeleted(false);
         store.setAddTime(LocalDateTime.now());
         store.setUpdateTime(LocalDateTime.now());
         storeMapper.insertSelective(store);
@@ -41,4 +42,9 @@ public class LitemallStoreService {
         storeMapper.logicalDeleteByPrimaryKey(id);
     }
 
+    public Long countByRegionId(Integer regionId) {
+        LitemallStoreExample example = new LitemallStoreExample();
+        example.or().andRegionIdEqualTo(regionId);
+        return storeMapper.countByExample(example);
+    }
 }
