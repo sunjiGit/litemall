@@ -32,6 +32,83 @@ public class WxStoreService {
     private LocationService locationService;
 
     /**
+     * 最近N家门店，距离10公里以内
+     *
+     * @param body
+     * @return
+     */
+    public Object nearestNStores(String body) {
+        logger.info(String.format("nearest N store and distance list param body=%s", body));
+        if (body == null) {
+            return ResponseUtil.badArgument();
+        }
+        String longitude = JacksonUtil.parseString(body, "lon");
+        String latitude = JacksonUtil.parseString(body, "lat");
+        String size = JacksonUtil.parseString(body, "size");
+        if (StringUtils.isBlank(longitude) || StringUtils.isBlank(latitude)) {
+            return ResponseUtil.badArgument();
+        }
+        if (!StringUtils.isNumeric(size)) {
+            size = "8";
+        }
+        try {
+            List<LitemallStore> stores = storeService.all();
+            if (CollectionUtils.isEmpty(stores)) {
+                logger.info("store list is empty");
+                return ResponseUtil.badArgumentNoData();
+            }
+
+            List<LocationInfo> locationInfoList = new ArrayList<>();
+            Location origin = new Location(longitude, latitude);
+            for (LitemallStore store : stores) {
+                Location destination;
+                if (StringUtils.isNotBlank(store.getLongitude()) && StringUtils.isNotBlank(store.getLatitude())) {
+                    destination = new Location(store.getLongitude(), store.getLatitude());
+                    String distance = locationService.calcDistance(origin, destination);
+                    LocationInfo info = new LocationInfo(store, origin, distance);
+                    locationInfoList.add(info);
+                } else if (StringUtils.isNotBlank(store.getAddressDetail())) {
+                    destination = locationService.getLocation(store.getAddressDetail());
+                    if (destination != null) {
+                        // 经纬度信息顺便更新一波
+                        store.setLongitude(destination.getLon());
+                        store.setLatitude(destination.getLat());
+                        store.setUpdateTime(LocalDateTime.now());
+                        storeService.updateById(store);
+
+                        String distance = locationService.calcDistance(origin, destination);
+                        LocationInfo info = new LocationInfo(store, origin, distance);
+                        locationInfoList.add(info);
+                    }
+                }
+            }
+
+            locationInfoList.sort((o1, o2) -> {
+                Long dis1 = Long.valueOf(o1.getDistance());
+                Long dis2 = Long.valueOf(o2.getDistance());
+                if (dis1 > dis2) {
+                    return 1;
+                } else if (dis1 < dis2) {
+                    return -1;
+                } else {
+                    return 0;
+                }
+            });
+
+            Integer sizeInt = Integer.valueOf(size);
+            locationInfoList = locationInfoList.subList(0,
+                    locationInfoList.size() >= sizeInt ? sizeInt: locationInfoList.size());
+
+            Object result = ResponseUtil.okList(locationInfoList);
+            logger.info(String.format("nearest N store+distance result=%s, param body=%s", result, body));
+            return result;
+        } catch (Exception e) {
+            logger.error("nearest N store+distance error.", e);
+            return ResponseUtil.serious();
+        }
+    }
+
+    /**
      * 最近门店 && 距离
      *
      * @param body
@@ -243,25 +320,4 @@ public class WxStoreService {
             return ResponseUtil.serious();
         }
     }
-
-//    public static void main(String[] args) {
-//        List<LocationInfo> locationInfoList = new ArrayList<>();
-//
-//        locationInfoList.add(new LocationInfo(new LitemallStore(), new Location("1", "1"), "1"));
-//        locationInfoList.add(new LocationInfo(new LitemallStore(), new Location("1", "1"), "2"));
-//
-//        locationInfoList.sort((o1, o2) -> {
-//            Long dis1 = Long.valueOf(o1.getDistance());
-//            Long dis2 = Long.valueOf(o2.getDistance());
-//            if (dis1 > dis2) {
-//                return 1;
-//            } else if (dis1 < dis2) {
-//                return -1;
-//            } else {
-//                return 0;
-//            }
-//        });
-//
-//        System.out.println(JacksonUtil.toJson(locationInfoList));
-//    }
 }
