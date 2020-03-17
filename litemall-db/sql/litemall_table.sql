@@ -850,6 +850,57 @@ CREATE TABLE `litemall_user_formid` (
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 /*!40101 SET character_set_client = @saved_cs_client */;
+
+DROP TABLE IF EXISTS `litemall_account`;
+CREATE TABLE `litemall_account` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT COMMENT '主键ID',
+  `user_id` int(11) DEFAULT NULL COMMENT '用户ID',
+  `account_type` varchar(16) DEFAULT NULL COMMENT '账户类型：CASH',
+  `balance` int(10) DEFAULT NULL COMMENT '账户余额，单位分',
+  `status` varchar(16) DEFAULT NULL COMMENT '状态：NORMAL-正常，FREEZE-冻结，CANCEL-销户',
+  `version` int(8) DEFAULT NULL COMMENT '数据版本',
+  `add_time` datetime DEFAULT NULL COMMENT '创建时间',
+  `update_time` datetime DEFAULT NULL COMMENT '更新时间',
+  `deleted` tinyint(1) DEFAULT NULL COMMENT '逻辑删除\n',
+  PRIMARY KEY (`id`),
+  KEY `idx_user_id` (`user_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='账户表';
+
+
+DROP TABLE IF EXISTS `litemall_account_flow`;
+CREATE TABLE `litemall_account_flow` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT COMMENT '主键',
+  `user_id` int(11) DEFAULT NULL COMMENT '用户ID\n',
+  `account_id` int(11) DEFAULT NULL COMMENT '账户ID',
+  `type` varchar(16) DEFAULT NULL COMMENT '流水类型：RECHARGE-充值，CONSUME-消费',
+  `amount` int(8) DEFAULT NULL COMMENT '流水金额，单位：分',
+  `order_id` int(11) DEFAULT NULL COMMENT '订单ID',
+  `subject` varchar(45) DEFAULT NULL COMMENT '账户流水描述',
+  `add_time` datetime DEFAULT NULL COMMENT '创建时间',
+  `update_time` datetime DEFAULT NULL COMMENT '更新时间',
+  `deleted` tinyint(1) DEFAULT NULL COMMENT '逻辑删除',
+  PRIMARY KEY (`id`),
+  KEY `idx_user_id` (`user_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='账户流水表';
+
+
+DROP TABLE IF EXISTS `litemall_red_envelope`;
+CREATE TABLE `litemall_red_envelope` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT COMMENT '主键',
+  `user_id` int(11) DEFAULT NULL COMMENT '用户ID',
+  `amount` int(8) DEFAULT NULL COMMENT '原始红包金额，单位分',
+  `used` int(8) DEFAULT '0' COMMENT '已使用金额',
+  `remaid` int(8) DEFAULT NULL COMMENT '剩余金额',
+  `expired_time` datetime DEFAULT NULL COMMENT '过期时间',
+  `add_time` datetime DEFAULT NULL COMMENT '创建时间',
+  `update_time` datetime DEFAULT NULL COMMENT '更新时间',
+  `deleted` tinyint(1) DEFAULT NULL COMMENT '逻辑删除',
+  PRIMARY KEY (`id`),
+  KEY `idx_user_id` (`user_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='用户红包表';
+
+
+
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
@@ -859,5 +910,4 @@ CREATE TABLE `litemall_user_formid` (
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
-
 -- Dump completed on 2018-12-10 16:59:09
