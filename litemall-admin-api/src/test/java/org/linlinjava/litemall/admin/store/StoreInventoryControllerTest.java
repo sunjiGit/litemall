@@ -44,8 +44,8 @@ public class StoreInventoryControllerTest {
     public void testAdjust() {
         LitemallStoreInventoryFlow flow = new LitemallStoreInventoryFlow();
         flow.setStoreId(1);
-        flow.setGoodsId(2);
-        flow.setAmount(10);
+        flow.setGoodsId(1006002);
+        flow.setAmount(20);
         flow.setOperateType(StoreInventoryOperateType.ADJUST_IN.getCode());
         flow.setOperator("sunji-test");
         storeInventoryController.adjust(flow);
@@ -55,8 +55,8 @@ public class StoreInventoryControllerTest {
 
         flow = new LitemallStoreInventoryFlow();
         flow.setStoreId(1);
-        flow.setGoodsId(2);
-        flow.setAmount(-5);
+        flow.setGoodsId(1006002);
+        flow.setAmount(-15);
         flow.setOperateType(StoreInventoryOperateType.ADJUST_OUT.getCode());
         flow.setOperator("sunji-test");
         storeInventoryController.adjust(flow);

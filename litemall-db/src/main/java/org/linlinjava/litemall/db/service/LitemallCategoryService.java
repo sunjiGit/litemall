@@ -37,6 +37,18 @@ public class LitemallCategoryService {
         return categoryMapper.selectByExample(example);
     }
 
+    public List<LitemallCategory> queryL1Selective(String sort, String order) {
+        LitemallCategoryExample example = new LitemallCategoryExample();
+        LitemallCategoryExample.Criteria criteria = example.createCriteria();
+        criteria.andLevelEqualTo("L1");
+        criteria.andDeletedEqualTo(false);
+        if (!StringUtils.isEmpty(sort) && !StringUtils.isEmpty(order)) {
+            example.setOrderByClause(sort + " " + order);
+        }
+
+        return categoryMapper.selectByExample(example);
+    }
+
     public List<LitemallCategory> queryByPid(Integer pid) {
         LitemallCategoryExample example = new LitemallCategoryExample();
         example.or().andPidEqualTo(pid).andDeletedEqualTo(false);

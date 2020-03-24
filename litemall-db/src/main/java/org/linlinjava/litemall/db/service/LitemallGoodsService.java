@@ -254,4 +254,17 @@ public class LitemallGoodsService {
         example.or().andIdIn(Arrays.asList(ids)).andIsOnSaleEqualTo(true).andDeletedEqualTo(false);
         return goodsMapper.selectByExampleSelective(example, columns);
     }
+
+    public List<LitemallGoods> queryByL2CategorySelective(List<Integer> L2categoryIds, String sort, String order) {
+        LitemallGoodsExample example = new LitemallGoodsExample();
+        LitemallGoodsExample.Criteria criteria = example.createCriteria();
+
+        criteria.andCategoryIdIn(L2categoryIds);
+        criteria.andDeletedEqualTo(false);
+        if (!StringUtils.isEmpty(sort) && !StringUtils.isEmpty(order)) {
+            example.setOrderByClause(sort + " " + order);
+        }
+
+        return goodsMapper.selectByExample(example);
+    }
 }

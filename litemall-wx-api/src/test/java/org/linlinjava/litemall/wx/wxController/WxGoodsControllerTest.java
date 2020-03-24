@@ -28,11 +28,27 @@ public class WxGoodsControllerTest {
 
     private final Log logger = LogFactory.getLog(WxGoodsControllerTest.class);
 
-
     @Autowired
     private LitemallCategoryService categoryService;
     @Autowired
     private LitemallGoodsService goodsService;
+    @Autowired
+    private WxGoodsController wxGoodsController;
+
+
+    @Test
+    public void listL1CategoryAndGoods() {
+        Integer uid = 2;
+
+        Object result = wxGoodsController.listL1CategoryAndGoods(uid, "add_time", "desc");
+
+        System.out.println("result:\n" + result);
+    }
+//    {errno=0, data={total=3, pages=1, limit=3, page=1, list=[CategoryGoodsVo{
+//        category=LitemallCategory [Hash = 392476084, IS_DELETED=false, NOT_DELETED=false, id=1011000, name=婴童, keywords=, desc=爱，从心开始, pid=0, iconUrl=..., picUrl=..., level=L1, sortOrder=7, addTime=2018-02-01T00:00, updateTime=2018-02-01T00:00, deleted=false],
+//        goodsList=[
+//        {"id":1033000,"goodsSn":"1033000","name":"新生彩棉初衣礼盒（婴童）","categoryId":1020003,"brandId":0,"gallery":["..."],"keywords":"","brief":"来自天然彩棉的礼物","isOnSale":true,"sortOrder":2,"picUrl":"...","shareUrl":"","isNew":false,"isHot":false,"unit":"件","counterPrice":219.00,"retailPrice":199.00,"addTime":{"hour":0,"minute":0,"second":0,"nano":0,"dayOfYear":32,"dayOfWeek":"THURSDAY","month":"FEBRUARY","dayOfMonth":1,"year":2018,"monthValue":2,"chronology":{"id":"ISO","calendarType":"iso8601"}},"updateTime":{"hour":0,"minute":0,"second":0,"nano":0,"dayOfYear":32,"dayOfWeek":"THURSDAY","month":"FEBRUARY","dayOfMonth":1,"year":2018,"monthValue":2,"chronology":{"id":"ISO","calendarType":"iso8601"}},"deleted":false,"detail":null},
+//        {"id":1116004,"goodsSn":"1116004","name":"条纹长袖海魂衫（男婴童）",
 
     @Test
     public void listByFirstCategoryTest() {
