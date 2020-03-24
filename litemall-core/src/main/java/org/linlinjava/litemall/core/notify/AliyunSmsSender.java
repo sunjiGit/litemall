@@ -66,7 +66,7 @@ public class AliyunSmsSender implements SmsSender {
     }
 
     @Override
-    public SmsResult sendWithTemplate(String phone, String templateId, String[] params) {
+    public SmsResult sendWithTemplate(String phone, String templateCode, String[] params) {
         DefaultProfile profile = DefaultProfile.getProfile(this.regionId, this.accessKeyId, this.accessKeySecret);
         IAcsClient client = new DefaultAcsClient(profile);
 
@@ -78,7 +78,7 @@ public class AliyunSmsSender implements SmsSender {
         request.putQueryParameter("RegionId", this.regionId);
         request.putQueryParameter("PhoneNumbers", phone);
         request.putQueryParameter("SignName", this.sign);
-        request.putQueryParameter("TemplateCode", templateId);
+        request.putQueryParameter("TemplateCode", templateCode);
         /*
           NOTE：阿里云短信和腾讯云短信这里存在不一致
           腾讯云短信模板参数是数组，因此短信模板形式如 “短信参数{1}， 短信参数{2}”
@@ -95,9 +95,9 @@ public class AliyunSmsSender implements SmsSender {
         }
         else if(params.length > 1){
             Map<String, String> data = new HashMap<>();
-            data.put("code", params[0]);
+//            data.put("code", params[0]);
             for(int i = 1; i < params.length; i++){
-                data.put("code" + i, params[i]);
+                data.put("code" + i, params[i-1]);
             }
             templateParam = JacksonUtil.toJson(data);
         }

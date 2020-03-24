@@ -3,6 +3,7 @@ package org.linlinjava.litemall.wx.web;
 import cn.binarywang.wx.miniapp.api.WxMaService;
 import cn.binarywang.wx.miniapp.bean.WxMaJscode2SessionResult;
 import cn.binarywang.wx.miniapp.bean.WxMaPhoneNumberInfo;
+import io.swagger.annotations.Api;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.linlinjava.litemall.core.notify.NotifyService;
@@ -41,6 +42,7 @@ import static org.linlinjava.litemall.wx.util.WxResponseCode.*;
 @RestController
 @RequestMapping("/wx/auth")
 @Validated
+@Api(value = "用户登陆操作 WxAuthController")
 public class WxAuthController {
     private final Log logger = LogFactory.getLog(WxAuthController.class);
 
@@ -64,6 +66,7 @@ public class WxAuthController {
      * @return 登录结果
      */
     @PostMapping("login")
+    @Deprecated
     public Object login(@RequestBody String body, HttpServletRequest request) {
         String username = JacksonUtil.parseString(body, "username");
         String password = JacksonUtil.parseString(body, "password");
@@ -185,6 +188,7 @@ public class WxAuthController {
      * @return
      */
     @PostMapping("regCaptcha")
+    @Deprecated
     public Object registerCaptcha(@RequestBody String body) {
         String phoneNumber = JacksonUtil.parseString(body, "mobile");
         if (StringUtils.isEmpty(phoneNumber)) {
@@ -198,12 +202,11 @@ public class WxAuthController {
             return ResponseUtil.fail(AUTH_CAPTCHA_UNSUPPORT, "小程序后台验证码服务不支持");
         }
         String code = CharUtil.getRandomNum(6);
-        notifyService.notifySmsTemplate(phoneNumber, NotifyType.CAPTCHA, new String[]{code});
-
         boolean successful = CaptchaCodeManager.addToCache(phoneNumber, code);
         if (!successful) {
             return ResponseUtil.fail(AUTH_CAPTCHA_FREQUENCY, "验证码未超时1分钟，不能发送");
         }
+        notifyService.notifySmsTemplate(phoneNumber, NotifyType.CAPTCHA, new String[]{code});
 
         return ResponseUtil.ok();
     }
@@ -235,6 +238,7 @@ public class WxAuthController {
      * 失败则 { errno: XXX, errmsg: XXX }
      */
     @PostMapping("register")
+    @Deprecated
     public Object register(@RequestBody String body, HttpServletRequest request) {
         String username = JacksonUtil.parseString(body, "username");
         String password = JacksonUtil.parseString(body, "password");
@@ -330,7 +334,6 @@ public class WxAuthController {
     /**
      * 请求验证码
      *
-     * TODO
      * 这里需要一定机制防止短信验证码被滥用
      *
      * @param body 手机号码 { mobile: xxx, type: xxx }
@@ -357,14 +360,13 @@ public class WxAuthController {
             return ResponseUtil.fail(AUTH_CAPTCHA_UNSUPPORT, "小程序后台验证码服务不支持");
         }
         String code = CharUtil.getRandomNum(6);
-        // TODO
-        // 根据type发送不同的验证码
-        notifyService.notifySmsTemplate(phoneNumber, NotifyType.CAPTCHA, new String[]{code});
 
         boolean successful = CaptchaCodeManager.addToCache(phoneNumber, code);
         if (!successful) {
             return ResponseUtil.fail(AUTH_CAPTCHA_FREQUENCY, "验证码未超时1分钟，不能发送");
         }
+        // 根据type发送不同的验证码
+        notifyService.notifySmsTemplate(phoneNumber, NotifyType.CAPTCHA, new String[]{code});
 
         return ResponseUtil.ok();
     }
@@ -385,6 +387,7 @@ public class WxAuthController {
      * 失败则 { errno: XXX, errmsg: XXX }
      */
     @PostMapping("reset")
+    @Deprecated
     public Object reset(@RequestBody String body, HttpServletRequest request) {
         String password = JacksonUtil.parseString(body, "password");
         String mobile = JacksonUtil.parseString(body, "mobile");
@@ -440,7 +443,7 @@ public class WxAuthController {
         if(userId == null){
             return ResponseUtil.unlogin();
         }
-        String password = JacksonUtil.parseString(body, "password");
+        String password = "password"; //JacksonUtil.parseString(body, "password");
         String mobile = JacksonUtil.parseString(body, "mobile");
         String code = JacksonUtil.parseString(body, "code");
 
@@ -460,10 +463,10 @@ public class WxAuthController {
         }
         user = userService.findById(userId);
 
-        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-        if (!encoder.matches(password, user.getPassword())) {
-            return ResponseUtil.fail(AUTH_INVALID_ACCOUNT, "账号密码不对");
-        }
+//        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+//        if (!encoder.matches(password, user.getPassword())) {
+//            return ResponseUtil.fail(AUTH_INVALID_ACCOUNT, "账号密码不对");
+//        }
 
         user.setMobile(mobile);
         if (userService.updateById(user) == 0) {
@@ -489,6 +492,7 @@ public class WxAuthController {
      * 失败则 { errno: XXX, errmsg: XXX }
      */
     @PostMapping("profile")
+    @Deprecated
     public Object profile(@LoginUser Integer userId, @RequestBody String body, HttpServletRequest request) {
         if(userId == null){
             return ResponseUtil.unlogin();
@@ -540,6 +544,7 @@ public class WxAuthController {
     }
 
     @PostMapping("logout")
+    @Deprecated
     public Object logout(@LoginUser Integer userId) {
         if (userId == null) {
             return ResponseUtil.unlogin();
@@ -548,6 +553,7 @@ public class WxAuthController {
     }
 
     @GetMapping("info")
+    @Deprecated
     public Object info(@LoginUser Integer userId) {
         if (userId == null) {
             return ResponseUtil.unlogin();

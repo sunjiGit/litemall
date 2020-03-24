@@ -36,7 +36,7 @@ public class CaptchaCodeManager {
         captchaItem.setPhoneNumber(phoneNumber);
         captchaItem.setCode(code);
         // 有效期为1分钟
-        captchaItem.setExpireTime(LocalDateTime.now().plusMinutes(1));
+        captchaItem.setExpireTime(LocalDateTime.now().plusMinutes(2));
 
         captchaCodeCache.put(phoneNumber, captchaItem);
 

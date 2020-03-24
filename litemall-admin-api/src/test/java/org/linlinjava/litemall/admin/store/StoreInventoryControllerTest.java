@@ -42,26 +42,28 @@ public class StoreInventoryControllerTest {
 
     @Test
     public void testAdjust() {
-        LitemallStoreInventoryFlow flow = new LitemallStoreInventoryFlow();
-        flow.setStoreId(1);
-        flow.setGoodsId(1006002);
-        flow.setAmount(20);
-        flow.setOperateType(StoreInventoryOperateType.ADJUST_IN.getCode());
-        flow.setOperator("sunji-test");
-        storeInventoryController.adjust(flow);
+//        LitemallStoreInventoryFlow flow = new LitemallStoreInventoryFlow();
+//        flow.setStoreId(1);
+//        flow.setGoodsId(1006002);
+//        flow.setAmount(20);
+//        flow.setOperateType(StoreInventoryOperateType.ADJUST_IN.getCode());
+//        flow.setOperator("sunji-test");
+//        storeInventoryController.adjust(flow);
 
         Object result = storeInventoryController.detail(1);
-        logger.info(String.format("1 param=%s, result=%s", flow, result));
+        System.out.println(result);
 
-        flow = new LitemallStoreInventoryFlow();
-        flow.setStoreId(1);
-        flow.setGoodsId(1006002);
-        flow.setAmount(-15);
-        flow.setOperateType(StoreInventoryOperateType.ADJUST_OUT.getCode());
-        flow.setOperator("sunji-test");
-        storeInventoryController.adjust(flow);
-
-        result = storeInventoryController.detail(1);
-        logger.info(String.format("2 param=%s, result=%s", flow, result));
+//        logger.info(String.format("1 param=%s, result=%s", flow, result));
+//
+//        flow = new LitemallStoreInventoryFlow();
+//        flow.setStoreId(1);
+//        flow.setGoodsId(1006002);
+//        flow.setAmount(-15);
+//        flow.setOperateType(StoreInventoryOperateType.ADJUST_OUT.getCode());
+//        flow.setOperator("sunji-test");
+//        storeInventoryController.adjust(flow);
+//
+//        result = storeInventoryController.detail(1);
+//        logger.info(String.format("2 param=%s, result=%s", flow, result));
     }
 }
