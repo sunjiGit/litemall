@@ -733,6 +733,7 @@ CREATE TABLE `litemall_store_inventory` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT COMMENT '主键',
   `store_id` int(11) unsigned NOT NULL COMMENT '门店ID',
   `goods_id` int(11) unsigned NOT NULL COMMENT '商品ID',
+  `goods_name` varchar(45) DEFAULT NULL COMMENT '商品名称',
   `amount` int(8) DEFAULT NULL COMMENT '库存数量',
   `add_time` datetime DEFAULT NULL COMMENT '创建时间',
   `update_time` datetime DEFAULT NULL COMMENT '更新时间',
@@ -740,7 +741,8 @@ CREATE TABLE `litemall_store_inventory` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `uniq_store_id_goods_id` (`store_id`,`goods_id`),
   KEY `idx_store_id_goods_id` (`store_id`,`goods_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='门店产品库存'
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='门店产品库存';
+
 --
 -- Table structure for table `litemall_store_inventory_flow`
 --
@@ -883,22 +885,22 @@ CREATE TABLE `litemall_account_flow` (
   KEY `idx_user_id` (`user_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='账户流水表';
 
-
-DROP TABLE IF EXISTS `litemall_red_envelope`;
-CREATE TABLE `litemall_red_envelope` (
-  `id` int(11) unsigned NOT NULL AUTO_INCREMENT COMMENT '主键',
-  `user_id` int(11) DEFAULT NULL COMMENT '用户ID',
-  `amount` int(8) DEFAULT NULL COMMENT '原始红包金额，单位分',
-  `used` int(8) DEFAULT '0' COMMENT '已使用金额',
-  `remaid` int(8) DEFAULT NULL COMMENT '剩余金额',
-  `expired_time` datetime DEFAULT NULL COMMENT '过期时间',
-  `add_time` datetime DEFAULT NULL COMMENT '创建时间',
-  `update_time` datetime DEFAULT NULL COMMENT '更新时间',
-  `deleted` tinyint(1) DEFAULT NULL COMMENT '逻辑删除',
-  PRIMARY KEY (`id`),
-  KEY `idx_user_id` (`user_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='用户红包表';
-
+--
+-- DROP TABLE IF EXISTS `litemall_red_envelope`;
+-- CREATE TABLE `litemall_red_envelope` (
+--   `id` int(11) unsigned NOT NULL AUTO_INCREMENT COMMENT '主键',
+--   `user_id` int(11) DEFAULT NULL COMMENT '用户ID',
+--   `amount` int(8) DEFAULT NULL COMMENT '原始红包金额，单位分',
+--   `used` int(8) DEFAULT '0' COMMENT '已使用金额',
+--   `remaid` int(8) DEFAULT NULL COMMENT '剩余金额',
+--   `expired_time` datetime DEFAULT NULL COMMENT '过期时间',
+--   `add_time` datetime DEFAULT NULL COMMENT '创建时间',
+--   `update_time` datetime DEFAULT NULL COMMENT '更新时间',
+--   `deleted` tinyint(1) DEFAULT NULL COMMENT '逻辑删除',
+--   PRIMARY KEY (`id`),
+--   KEY `idx_user_id` (`user_id`)
+-- ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='用户红包表';
+-- 不使用，红包=账户余额
 
 
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;

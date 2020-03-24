@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/wx/store")
 @Validated
-@Api(value = "门店的前台操作")
+@Api(value = "门店的前台操作 WxStoreController")
 public class WxStoreController {
     private final Log logger = LogFactory.getLog(WxStoreController.class);
 
