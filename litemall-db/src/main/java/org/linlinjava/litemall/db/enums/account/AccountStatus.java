@@ -1,15 +1,16 @@
-package org.linlinjava.litemall.core.store.enums;
+package org.linlinjava.litemall.db.enums.account;
 
-public enum StoreStatus {
+public enum AccountStatus {
 
-    WORKING("WORKING", "营业中"),
-    STOP("STOP", "打烊"),
+    NORMAL("NORMAL", "正常"),
+    FREEZE("FREEZE", "冻结"),
+    CANCEL("CANCEL", "销户"),
     ;
 
     private String code;
     private String desc;
 
-    StoreStatus(String code, String desc) {
+    AccountStatus(String code, String desc) {
         this.code = code;
         this.desc = desc;
     }
@@ -21,4 +22,5 @@ public enum StoreStatus {
     public String getDesc() {
         return desc;
     }
+
 }

@@ -24,16 +24,16 @@ litemall:
     # 短消息模版通知配置
     # 短信息用于通知客户，例如发货短信通知，注意配置格式；template-name，template-templateId 请参考 NotifyType 枚举值
     sms:
-      enable: false
+      enable: true
       # 如果是腾讯云短信，则设置active的值tencent
       # 如果是阿里云短信，则设置active的值aliyun
-      active: tencent
-      sign: litemall
+      active: aliyun
+      sign: 多半商城
       template:
       - name: paySucceed
         templateId: 156349
       - name: captcha
-        templateId: 156433
+        templateId: SMS_181720394
       - name: ship
         templateId: 158002
       - name: refund
@@ -42,9 +42,9 @@ litemall:
         appid: 111111111
         appkey: xxxxxxxxxxxxxx
       aliyun:
-        regionId: xxx
-        accessKeyId: xxx
-        accessKeySecret: xxx
+        regionId: cn-hangzhou
+        accessKeyId: LTAI4Fg71dD5LDzRkrVxY6xJ
+        accessKeySecret: YRkqDKW7ofpBbr1TtbNdvJbHYr2oX5
 
 
     # 微信模版通知配置

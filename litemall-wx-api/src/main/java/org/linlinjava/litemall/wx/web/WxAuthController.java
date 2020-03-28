@@ -336,7 +336,7 @@ public class WxAuthController {
      *
      * 这里需要一定机制防止短信验证码被滥用
      *
-     * @param body 手机号码 { mobile: xxx, type: xxx }
+     * @param body 手机号码 { mobile: xxx, type: captcha }
      * @return
      */
     @PostMapping("captcha")
@@ -428,11 +428,9 @@ public class WxAuthController {
      *
      * @param body    请求内容
      *                {
-     *                password: xxx,
      *                mobile: xxx
      *                code: xxx
      *                }
-     *                其中code是手机验证码，目前还不支持手机短信验证码
      * @param request 请求对象
      * @return 登录结果
      * 成功则 { errno: 0, errmsg: '成功' }

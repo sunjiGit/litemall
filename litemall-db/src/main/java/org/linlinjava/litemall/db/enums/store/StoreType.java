@@ -1,4 +1,4 @@
-package org.linlinjava.litemall.core.store.enums;
+package org.linlinjava.litemall.db.enums.store;
 
 public enum StoreType {
 

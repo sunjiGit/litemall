@@ -149,4 +149,9 @@ public interface LitemallAccountMapper {
      * @mbg.generated
      */
     int logicalDeleteByPrimaryKey(Integer id);
+
+    /**
+     * 乐观锁
+     */
+    int updateBalanceByPrimaryKeyVersion(LitemallAccount account);
 }

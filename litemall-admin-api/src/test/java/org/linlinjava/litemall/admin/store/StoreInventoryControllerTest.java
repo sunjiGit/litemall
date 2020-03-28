@@ -2,11 +2,8 @@ package org.linlinjava.litemall.admin.store;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.linlinjava.litemall.admin.web.AdminStoreController;
 import org.linlinjava.litemall.admin.web.AdminStoreInventoryController;
-import org.linlinjava.litemall.core.store.enums.StoreInventoryOperateType;
-import org.linlinjava.litemall.core.store.enums.StoreType;
-import org.linlinjava.litemall.db.domain.LitemallStore;
+import org.linlinjava.litemall.db.enums.store.StoreInventoryOperateType;
 import org.linlinjava.litemall.db.domain.LitemallStoreInventoryFlow;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
