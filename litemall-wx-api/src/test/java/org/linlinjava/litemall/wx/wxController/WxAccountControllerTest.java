@@ -44,7 +44,7 @@ public class WxAccountControllerTest {
         LitemallAccountFlow fundFlow = new LitemallAccountFlow();
         fundFlow.setUserId(userId);
         fundFlow.setAccountId(account.getId());
-        fundFlow.setAmount(100);
+        fundFlow.setAmount(10000);
         object = (Map<String, Object>) wxAccountController.fund(userId, fundFlow);
         String uniqFlowId = object.get("data").toString();
         System.out.println(uniqFlowId);
@@ -84,6 +84,10 @@ public class WxAccountControllerTest {
         flowList = (Map<String, Object>) wxAccountController.flow(userId, 1, 2);
         flows = (ArrayList<LitemallAccountFlow>) ((HashMap<String, Object>) flowList.get("data")).get("list");
         System.out.println("flows2=" + JacksonUtil.toJson(flows));
+
+        flowList = (Map<String, Object>) wxAccountController.flow(userId, 2, 2);
+        flows = (ArrayList<LitemallAccountFlow>) ((HashMap<String, Object>) flowList.get("data")).get("list");
+        System.out.println("flows3=" + JacksonUtil.toJson(flows));
 
     }
 }

@@ -29,6 +29,10 @@ public class SystemConfig {
     public final static String LITEMALL_MALL_PHONE = "litemall_mall_phone";
     public final static String LITEMALL_MALL_QQ = "litemall_mall_qq";
 
+    // 红包相关配置
+    public final static String LITEMALL_ACCOUNT_RED_SWITCH = "litemall_account_red_switch";
+    public final static String LITEMALL_ACCOUNT_RED_RATE = "litemall_account_red_rate";
+
     //所有的配置均保存在该 HashMap 中
     private static Map<String, String> SYSTEM_CONFIGS = new HashMap<>();
 
@@ -110,6 +114,14 @@ public class SystemConfig {
 
     public static String getMallQQ() {
         return getConfig(LITEMALL_MALL_QQ);
+    }
+
+    public static String getRedSwitch() {
+        return getConfig(LITEMALL_ACCOUNT_RED_SWITCH);
+    }
+
+    public static String getRedRate() {
+        return getConfig(LITEMALL_ACCOUNT_RED_RATE);
     }
 
     public static void setConfigs(Map<String, String> configs) {

@@ -53,6 +53,14 @@ class SystemInistService {
         DEFAULT_CONFIGS.put(SystemConfig.LITEMALL_MALL_ADDRESS, "上海");
         DEFAULT_CONFIGS.put(SystemConfig.LITEMALL_MALL_PHONE, "021-xxxx-xxxx");
         DEFAULT_CONFIGS.put(SystemConfig.LITEMALL_MALL_QQ, "738696120");
+
+        // 红包相关配置默认值
+        DEFAULT_CONFIGS.put(SystemConfig.LITEMALL_ACCOUNT_RED_SWITCH, "ON");
+        DEFAULT_CONFIGS.put(SystemConfig.LITEMALL_ACCOUNT_RED_RATE,
+                "[{\"range\":\"0-1\", \"rate\":\"50\"}," +
+                "{\"range\":\"1-3\", \"rate\":\"40\"}," +
+                "{\"range\":\"3-10\", \"rate\":\"10\"}]");
+
     }
 
     @Autowired

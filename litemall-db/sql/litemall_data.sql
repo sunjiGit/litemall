@@ -290,6 +290,8 @@ UNLOCK TABLES;
 
 LOCK TABLES `litemall_system` WRITE;
 /*!40000 ALTER TABLE `litemall_system` DISABLE KEYS */;
+insert into litemall.litemall_system (key_name, key_value, add_time, update_time, deleted) values ('litemall_account_red_switch', 'on', now(), now(), '0');
+insert into litemall.litemall_system (key_name, key_value, add_time, update_time, deleted) values ('litemall_account_red_rate', '[{"range":"0-1", "rate":"50"},{"range":"1-3", "rate":"40"},{"range":"3-10", "rate":"10"}]', now(), now(), '0');
 /*!40000 ALTER TABLE `litemall_system` ENABLE KEYS */;
 UNLOCK TABLES;
 

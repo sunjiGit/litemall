@@ -1,13 +1,10 @@
 package org.linlinjava.litemall.db.service;
 
 import com.github.pagehelper.PageHelper;
-import org.apache.ibatis.session.RowBounds;
 import org.linlinjava.litemall.db.dao.LitemallAccountFlowMapper;
 import org.linlinjava.litemall.db.dao.LitemallAccountMapper;
-import org.linlinjava.litemall.db.domain.LitemallAccount;
-import org.linlinjava.litemall.db.domain.LitemallAccountExample;
-import org.linlinjava.litemall.db.domain.LitemallAccountFlow;
-import org.linlinjava.litemall.db.domain.LitemallAccountFlowExample;
+import org.linlinjava.litemall.db.dao.LitemallSystemMapper;
+import org.linlinjava.litemall.db.domain.*;
 import org.linlinjava.litemall.db.enums.account.AccountStatus;
 import org.linlinjava.litemall.db.enums.account.AccountType;
 import org.springframework.stereotype.Service;
@@ -23,6 +20,8 @@ public class LitemallAccountService {
     private LitemallAccountMapper accountMapper;
     @Resource
     private LitemallAccountFlowMapper accountFlowMapper;
+    @Resource
+    private LitemallSystemMapper systemMapper;
 
     public LitemallAccount queryOrCreateByUid(Integer uid) {
         LitemallAccountExample example = new LitemallAccountExample();
@@ -74,11 +73,23 @@ public class LitemallAccountService {
         accountFlowMapper.updateByPrimaryKey(flow);
     }
 
+    @Transactional
+    public void insertAccountFlowAndBalance(LitemallAccountFlow flow) {
+        LitemallAccount account = accountMapper.selectByPrimaryKey(flow.getAccountId());
+        account.setBalance(account.getBalance() + flow.getAmount());
+        account.setUpdateTime(LocalDateTime.now());
+        accountMapper.updateBalanceByPrimaryKeyVersion(account);
+
+        accountFlowMapper.insert(flow);
+    }
+
     public int createNewAccountFlow(LitemallAccountFlow flow) {
        return accountFlowMapper.insert(flow);
     }
 
     public LitemallAccountFlow queryByUidAndOrderId(Integer userId, Integer orderId) {
-        return null;
+        LitemallAccountFlowExample example = new LitemallAccountFlowExample();
+        example.or().andUserIdEqualTo(userId).andOrderIdEqualTo(orderId);
+        return accountFlowMapper.selectOneByExample(example);
     }
 }

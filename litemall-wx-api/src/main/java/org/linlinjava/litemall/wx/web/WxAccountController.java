@@ -1,14 +1,20 @@
 package org.linlinjava.litemall.wx.web;
 
 import com.alibaba.druid.util.StringUtils;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.linlinjava.litemall.core.system.SystemConfig;
+import org.linlinjava.litemall.core.util.JacksonUtil;
+import org.linlinjava.litemall.core.util.RandomUtil;
 import org.linlinjava.litemall.core.util.ResponseUtil;
 import org.linlinjava.litemall.db.domain.LitemallAccount;
 import org.linlinjava.litemall.db.domain.LitemallAccountFlow;
 import org.linlinjava.litemall.db.enums.account.AccountFlowStatus;
 import org.linlinjava.litemall.db.enums.account.AccountFlowType;
 import org.linlinjava.litemall.db.service.LitemallAccountService;
+import org.linlinjava.litemall.db.service.LitemallSystemConfigService;
 import org.linlinjava.litemall.wx.annotation.LoginUser;
 import org.linlinjava.litemall.wx.service.GetRegionService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +23,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
+import java.util.*;
 
 import static org.linlinjava.litemall.core.constant.AccountConstant.ACCOUNT_FLOW_ORDER_RED_SUBJECT;
 import static org.linlinjava.litemall.core.constant.AccountConstant.ACCOUNT_FLOW_SUBMIT_SUBJECT;
@@ -34,6 +40,8 @@ public class WxAccountController extends GetRegionService {
 
     @Autowired
     private LitemallAccountService accountService;
+    @Autowired
+    private LitemallSystemConfigService systemConfigService;
 
     /**
      * 账户概览
@@ -98,7 +106,7 @@ public class WxAccountController extends GetRegionService {
                 userId,
                 AccountFlowType.RECHARGE.getOrder(),
                 LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss")),
-                (long)(Math.random() * 10000)
+                (long) (Math.random() * 10000)
         );
 
         // 充值金额，
@@ -124,7 +132,7 @@ public class WxAccountController extends GetRegionService {
     /**
      * 微信转账confirm地址
      *
-     * @param userId  用户ID
+     * @param userId 用户ID
      * @return 确认操作结果
      */
     @PostMapping("confirm")
@@ -163,7 +171,7 @@ public class WxAccountController extends GetRegionService {
     /**
      * 红包发放 RED_ENVELOPE
      *
-     * @param userId 用户ID
+     * @param userId  用户ID
      * @param orderId 订单ID
      */
     @PostMapping("redenvelop")
@@ -191,7 +199,7 @@ public class WxAccountController extends GetRegionService {
                 userId,
                 AccountFlowType.RED_ENVELOPE.getOrder(),
                 LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss")),
-                (long)(Math.random() * 10000)
+                (long) (Math.random() * 10000)
         );
         LitemallAccount account = accountService.queryOrCreateByUid(userId);
 
@@ -202,16 +210,64 @@ public class WxAccountController extends GetRegionService {
         flow.setUserId(userId);
         flow.setUniqFlowId(uniqFlowId);
         flow.setAccountId(account.getId());
-        flow.setAmount(0); // TODO
+        // 计算红包金额
+        flow.setAmount(randomRedEnvelopAmount());
         flow.setType(AccountFlowType.RED_ENVELOPE.getCode());
         flow.setStatus(AccountFlowStatus.CONFIRM.getCode()); // 红包立即到账
         flow.setSubject(ACCOUNT_FLOW_ORDER_RED_SUBJECT);
         flow.setAddTime(LocalDateTime.now());
         flow.setUpdateTime(LocalDateTime.now());
         flow.setDeleted(false);
-        accountService.confirmAccountFlowAndBalance(flow);
+        accountService.insertAccountFlowAndBalance(flow);
 
         return ResponseUtil.ok(flow.getUniqFlowId());
+    }
+
+    /**
+     * 计算随机红包
+     * 单位：分
+     */
+    private Integer randomRedEnvelopAmount() {
+        Map<String, String> redConfig = systemConfigService.listRed();
+        if (!"ON".equalsIgnoreCase(redConfig.get(SystemConfig.LITEMALL_ACCOUNT_RED_SWITCH))) {
+            return 0;
+        }
+
+        String jsonStr = redConfig.get(SystemConfig.LITEMALL_ACCOUNT_RED_RATE);
+        ArrayNode arrayNode = (ArrayNode) JacksonUtil.toNode(jsonStr);
+
+        Iterator<JsonNode> ite = arrayNode.elements();
+        Map<String, String> ranges = new HashMap<>();
+        Map<String, String> rates = new HashMap<>();
+
+        while (ite.hasNext()) {
+            JsonNode node = ite.next();
+            ranges.put(node.get("range").textValue(), node.get("rate").textValue());
+            rates.put(node.get("rate").textValue(), node.get("range").textValue());
+        }
+
+        // 按照金额大小 排序
+        List<String> keys = new ArrayList<>(ranges.keySet());
+        Collections.sort(keys);
+        List<Integer> chooses = new ArrayList<>();
+        for (String key : keys) {
+            if (StringUtils.isNumber(ranges.get(key))) {
+                chooses.add(Integer.valueOf(ranges.get(key)));
+            }
+        }
+
+        // 两次随机，第一次 看金额 落在哪个排序；第二次随机，看具体数字。
+        int amount = 0;
+        Integer chosen = RandomUtil.choose(chooses);
+        String chosenRange = rates.get("" + chosen);
+        String[] crs = chosenRange.split("-");
+        if (crs.length == 2) {
+            int begin = StringUtils.isNumber(crs[0]) ? Integer.valueOf(crs[0]) : 0;
+            int end = StringUtils.isNumber(crs[1]) ? Integer.valueOf(crs[1]) : 0;
+            amount = (int) RandomUtil.wave(begin * 100.0, end * 100.0);
+        }
+
+        return amount;
     }
 
 }
