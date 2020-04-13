@@ -10,7 +10,7 @@ import java.util.Objects;
 public class CategoryGoodsVo {
 
     private LitemallCategory category;
-    private List<LitemallGoods> goodsList;
+    private List<GoodAndProductVo> goodProductList;
 
     public LitemallCategory getCategory() {
         return category;
@@ -20,12 +20,12 @@ public class CategoryGoodsVo {
         this.category = category;
     }
 
-    public List<LitemallGoods> getGoodsList() {
-        return goodsList;
+    public List<GoodAndProductVo> getGoodProductList() {
+        return goodProductList;
     }
 
-    public void setGoodsList(List<LitemallGoods> goodsList) {
-        this.goodsList = goodsList;
+    public void setGoodProductList(List<GoodAndProductVo> goodProductList) {
+        this.goodProductList = goodProductList;
     }
 
     @Override
@@ -34,19 +34,19 @@ public class CategoryGoodsVo {
         if (o == null || getClass() != o.getClass()) return false;
         CategoryGoodsVo that = (CategoryGoodsVo) o;
         return Objects.equals(category, that.category) &&
-                Objects.equals(goodsList, that.goodsList);
+                Objects.equals(goodProductList, that.goodProductList);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(category, goodsList);
+        return Objects.hash(category, goodProductList);
     }
 
     @Override
     public String toString() {
         return "CategoryGoodsVo{" +
                 "category=" + category +
-                ", goodsList=" + JacksonUtil.toJson(goodsList) +
+                ", goodProductList=" + JacksonUtil.toJson(goodProductList) +
                 '}';
     }
 }

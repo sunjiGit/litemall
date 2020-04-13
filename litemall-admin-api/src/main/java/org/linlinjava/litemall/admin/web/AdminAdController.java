@@ -20,7 +20,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/admin/ad")
 @Validated
-public class AdminAdController {
+public class  AdminAdController {
     private final Log logger = LogFactory.getLog(AdminAdController.class);
 
     @Autowired

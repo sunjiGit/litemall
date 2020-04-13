@@ -16,6 +16,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.StopWatch;
 
 import java.util.Collections;
 import java.util.List;
@@ -35,15 +36,21 @@ public class WxGoodsControllerTest {
     @Autowired
     private WxGoodsController wxGoodsController;
 
-
     @Test
-    public void listL1CategoryAndGoods() {
+    public void listAllGoodProductTest() {
         Integer uid = 2;
-
-        Object result = wxGoodsController.listL1CategoryAndGoods(uid, "add_time", "desc");
-
+        Object result = wxGoodsController.listAllGoodProduct(uid, "add_time", "desc");
         System.out.println("result:\n" + result);
+
+        StopWatch stopWatch = new StopWatch("123");
+        stopWatch.start("1231");
+        result = wxGoodsController.listAllGoodProduct(uid, "add_time", "desc");
+        System.out.println("result:\n" + result);
+        stopWatch.stop();
+
+        System.out.println(stopWatch.prettyPrint());
     }
+
 //    {errno=0, data={total=3, pages=1, limit=3, page=1, list=[CategoryGoodsVo{
 //        category=LitemallCategory [Hash = 392476084, IS_DELETED=false, NOT_DELETED=false, id=1011000, name=婴童, keywords=, desc=爱，从心开始, pid=0, iconUrl=..., picUrl=..., level=L1, sortOrder=7, addTime=2018-02-01T00:00, updateTime=2018-02-01T00:00, deleted=false],
 //        goodsList=[
@@ -52,6 +59,9 @@ public class WxGoodsControllerTest {
 
     @Test
     public void listByFirstCategoryTest() {
+        StopWatch stopWatch = new StopWatch("123");
+        stopWatch.start("1231");
+
         Integer firstCategoryId = 1013001;
 //        Integer firstCategoryId = -1013001;
         Integer page = 1;
@@ -70,6 +80,9 @@ public class WxGoodsControllerTest {
         List<LitemallGoods> goodsList = goodsService.queryByCategory(cateIds, page, limit);
 
         logger.info("ResponseUtil.okList(list)" + ResponseUtil.okList(goodsList));
+
+        stopWatch.stop();
+        System.out.println(stopWatch.prettyPrint());
     }
 
 }

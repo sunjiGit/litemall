@@ -12,6 +12,7 @@ import org.linlinjava.litemall.db.domain.*;
 import org.linlinjava.litemall.db.service.*;
 import org.linlinjava.litemall.wx.annotation.LoginUser;
 import org.linlinjava.litemall.wx.vo.CategoryGoodsVo;
+import org.linlinjava.litemall.wx.vo.GoodAndProductVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
 import org.springframework.validation.annotation.Validated;
@@ -258,38 +259,48 @@ public class WxGoodsController {
 		return ResponseUtil.okList(goodsList);
 	}
 
-	/**
-	 * 排列商品
-	 * <p>
-	 * 按照大类+商品的方式排列
-	 */
-	@GetMapping("listL1CategoryAndGoods")
-	public Object listL1CategoryAndGoods(@LoginUser Integer userId,
-										 @Sort(accepts = {"add_time", "name"}) @RequestParam(defaultValue = "add_time") String sort,
-										 @Order @RequestParam(defaultValue = "desc") String order) {
-		if (StringUtils.isEmptyOrWhitespaceOnly(sort) || StringUtils.isEmptyOrWhitespaceOnly(order)) {
-			logger.info(String.format("params error. sort=%s, order=%s", sort, order));
-			return ResponseUtil.badArgument();
-		}
-		List<CategoryGoodsVo> voList = new ArrayList<>();
-		// 1 获取所有有效类目
-		List<LitemallCategory> categoryList = categoryService.queryL1Selective(sort, order);
-		// 2 获取所有有效类目下的商品
-		for (LitemallCategory category : categoryList) {
-			List<LitemallCategory> L2CategoryIds = categoryService.queryByPid(category.getId());
-			List<Integer> cateIds = L2CategoryIds.stream().map(LitemallCategory::getId).collect(Collectors.toList());
+    /**
+     * 排列商品（带productId）
+     *
+     * <p>
+     * 按照大类+商品的方式排列
+     */
+    @GetMapping("listAllGoodProduct")
+    public Object listAllGoodProduct(@LoginUser Integer userId,
+                                     @Sort(accepts = {"add_time", "name"}) @RequestParam(defaultValue = "add_time") String sort,
+                                     @Order @RequestParam(defaultValue = "desc") String order) {
+        if (StringUtils.isEmptyOrWhitespaceOnly(sort) || StringUtils.isEmptyOrWhitespaceOnly(order)) {
+            logger.info(String.format("params error. sort=%s, order=%s", sort, order));
+            return ResponseUtil.badArgument();
+        }
+        List<CategoryGoodsVo> voList = new ArrayList<>();
+        // 1 获取所有有效类目
+        List<LitemallCategory> categoryList = categoryService.queryL1Selective(sort, order);
+        // 2 获取所有有效类目下的商品
+        for (LitemallCategory category : categoryList) {
+            List<LitemallCategory> L2CategoryIds = categoryService.queryByPid(category.getId());
+            List<Integer> cateIds = L2CategoryIds.stream().map(LitemallCategory::getId).collect(Collectors.toList());
 
-			List<LitemallGoods> goods = goodsService.queryByL2CategorySelective(cateIds, sort, order);
-			if (goods != null) {
-				CategoryGoodsVo vo = new CategoryGoodsVo();
-				vo.setCategory(category);
-				vo.setGoodsList(goods);
-				voList.add(vo);
-			}
-		}
-		// 3 拼接
-		return ResponseUtil.okList(voList);
-	}
+            List<LitemallGoods> goods = goodsService.queryByL2CategorySelective(cateIds, sort, order);
+            if (goods != null) {
+                Map<Integer, LitemallGoodsProduct> goodsProductMap = productService.queryByGids(goods);
+                List<GoodAndProductVo> goodAndProductVoList = new ArrayList<>(goods.size());
+                for (LitemallGoods good : goods) {
+                    GoodAndProductVo gp = new GoodAndProductVo();
+                    gp.setGoods(good);
+                    gp.setProduct(goodsProductMap.get(good.getId()));
+                    goodAndProductVoList.add(gp);
+                }
+
+                CategoryGoodsVo vo = new CategoryGoodsVo();
+                vo.setCategory(category);
+                vo.setGoodProductList(goodAndProductVoList);
+                voList.add(vo);
+            }
+        }
+        // 3 拼接
+        return ResponseUtil.okList(voList);
+    }
 
 	/**
 	 * 根据条件搜素商品

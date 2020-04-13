@@ -65,7 +65,6 @@ public class LitemallGoodsService {
         example.or().andCategoryIdIn(catList).andIsOnSaleEqualTo(true).andDeletedEqualTo(false);
         example.setOrderByClause("add_time  desc");
         PageHelper.startPage(offset, limit);
-
         return goodsMapper.selectByExampleSelective(example, columns);
     }
 

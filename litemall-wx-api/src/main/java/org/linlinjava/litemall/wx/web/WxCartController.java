@@ -124,7 +124,7 @@ public class WxCartController {
         if (!ObjectUtils.allNotNull(productId, number, goodsId)) {
             return ResponseUtil.badArgument();
         }
-        if(number <= 0){
+        if (number <= 0) {
             return ResponseUtil.badArgument();
         }
 
@@ -146,10 +146,9 @@ public class WxCartController {
             cart.setId(null);
             cart.setGoodsSn(goods.getGoodsSn());
             cart.setGoodsName((goods.getName()));
-            if(StringUtils.isEmpty(product.getUrl())){
+            if (StringUtils.isEmpty(product.getUrl())) {
                 cart.setPicUrl(goods.getPicUrl());
-            }
-            else{
+            } else {
                 cart.setPicUrl(product.getUrl());
             }
             cart.setPrice(product.getPrice());
