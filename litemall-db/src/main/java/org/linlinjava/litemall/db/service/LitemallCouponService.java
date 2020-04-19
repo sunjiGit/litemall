@@ -51,7 +51,9 @@ public class LitemallCouponService {
      */
     public List<LitemallCoupon> queryList(LitemallCouponExample.Criteria criteria, int offset, int limit, String sort, String order) {
         criteria.andTypeEqualTo(CouponConstant.TYPE_COMMON).andStatusEqualTo(CouponConstant.STATUS_NORMAL).andDeletedEqualTo(false);
-        criteria.example().setOrderByClause(sort + " " + order);
+        if (!StringUtils.isEmpty(sort) && !StringUtils.isEmpty(order)) {
+            criteria.example().setOrderByClause(sort + " " + order);
+        }
         PageHelper.startPage(offset, limit);
         return couponMapper.selectByExampleSelective(criteria.example(), result);
     }

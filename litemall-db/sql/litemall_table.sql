@@ -889,6 +889,20 @@ CREATE TABLE `litemall_account_flow` (
   KEY `idx_user_id` (`user_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='账户流水表';
 
+DROP TABLE IF EXISTS `litemall_recharge_coupon_cfg`;
+CREATE TABLE `litemall_recharge_coupon_cfg` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT '主键',
+  `amount` int(10) unsigned NOT NULL COMMENT '充值金额（单位分）',
+  `desc` varchar(256) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '描述',
+  `coupon_detail` varchar(512) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Json对象，{[“coupon_id”:”1”,”num”:”1”]} 优惠券ID+单张优惠券金额+数量',
+  `total_coupon_number` varchar(45) COLLATE utf8mb4_unicode_ci DEFAULT '0' COMMENT '总优惠券张数',
+  `total_coupon_amount` varchar(45) COLLATE utf8mb4_unicode_ci DEFAULT '0' COMMENT '总优惠券优惠金额（单位：分）',
+  `add_time` datetime DEFAULT NULL COMMENT '添加时间',
+  `update_time` datetime DEFAULT NULL COMMENT '更新时间',
+  `deleted` tinyint(1) DEFAULT NULL COMMENT '是否删除',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='充值优惠配置表';
+
 --
 -- DROP TABLE IF EXISTS `litemall_red_envelope`;
 -- CREATE TABLE `litemall_red_envelope` (
