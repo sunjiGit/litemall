@@ -7,7 +7,10 @@ import org.junit.runner.RunWith;
 import org.linlinjava.litemall.core.util.JacksonUtil;
 import org.linlinjava.litemall.db.domain.LitemallAccount;
 import org.linlinjava.litemall.db.domain.LitemallAccountFlow;
+import org.linlinjava.litemall.wx.vo.CouponVo;
+import org.linlinjava.litemall.wx.vo.FundCouponConfigVo;
 import org.linlinjava.litemall.wx.web.WxAccountController;
+import org.linlinjava.litemall.wx.web.WxCouponController;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -28,7 +31,56 @@ public class WxAccountControllerTest {
 
     @Autowired
     private WxAccountController wxAccountController;
+    @Autowired
+    private WxCouponController wxCouponController;
 
+    @Test
+    public void testListFundConfig() {
+        int userId = 1;
+        int pageNum = 1;
+        int pageSize = 10;
+        Map<String, Object> fundConfigList = (Map<String, Object>) wxAccountController.listFundConfig(userId, pageNum,
+                pageSize);
+        List<FundCouponConfigVo> vos = (ArrayList<FundCouponConfigVo>)
+                ((Map<String, Object>) fundConfigList.get("data")).get("list");
+        System.out.println("fund config list=" + vos);
+    }
+
+    @Test
+    public void testFundByConfig() {
+        int userId = 3;
+        // 查充值余额
+        Map<String, Object> accountInfo = (Map<String, Object>) wxAccountController.info(userId);
+        System.out.println("accountInfo=" + accountInfo.get("data"));
+        Map<String, Object> myCouponList = (Map<String, Object>) wxCouponController.mylist(userId,
+                Short.parseShort("0"), 1, 10, "add_time", "desc");
+        System.out.println("myCouponList=" + myCouponList);
+        List<CouponVo> couponVos = (List<CouponVo>) ((Map<String, Object>) myCouponList.get("data")).get("list");
+        System.out.println("couponList=" + JacksonUtil.toJson(couponVos));
+
+//        wxAccountController.listFundConfig(userId, 1, 10);
+//        int configId = 1;
+//        // 调用充值
+//        Object result = wxAccountController.fundByConfig(userId, configId);
+//        System.out.println("userId=" + userId + ", configId=" + configId + ", funcConfig result=" + result);
+//
+//        // 查充值余额
+//        accountInfo = (Map<String, Object>) wxAccountController.info(userId);
+//        System.out.println("after fundByConfig...");
+//        System.out.println("accountInfo=" + accountInfo.get("data"));
+//        // 查充值流水
+//        Map<String, Object> flowResult = (Map<String, Object>) wxAccountController.flow(userId, 1, 20);
+//        System.out.println("flowResult=" + flowResult);
+//        List<LitemallAccountFlow> list = (List<LitemallAccountFlow>) ((Map<String, Object>) flowResult.get("data")).get("list");
+//        System.out.println("flows=" + JacksonUtil.toJson(list));
+//        // 查优惠券
+//        myCouponList = (Map<String, Object>) wxCouponController.mylist(userId,
+//                Short.parseShort("0"), 1, 10, "add_time", "desc");
+//        System.out.println("myCouponList=" + myCouponList);
+//        couponVos = (List<CouponVo>) ((Map<String, Object>) myCouponList.get("data")).get("list");
+//        System.out.println("couponList=" + JacksonUtil.toJson(couponVos));
+
+    }
 
     @Test
     public void fundAndInfoTest() {

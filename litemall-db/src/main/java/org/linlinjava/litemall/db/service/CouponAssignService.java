@@ -6,10 +6,10 @@ import org.linlinjava.litemall.db.util.CouponConstant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
+@SuppressWarnings("Duplicates")
 @Service
 public class CouponAssignService {
 
@@ -26,7 +26,7 @@ public class CouponAssignService {
      */
     public void assignForRegister(Integer userId) {
         List<LitemallCoupon> couponList = couponService.queryRegister();
-        for(LitemallCoupon coupon : couponList){
+        for (LitemallCoupon coupon : couponList) {
             Integer couponId = coupon.getId();
 
             Integer count = couponUserService.countUserAndCoupon(userId, couponId);
@@ -35,7 +35,7 @@ public class CouponAssignService {
             }
 
             Short limit = coupon.getLimit();
-            while(limit > 0){
+            while (limit > 0) {
                 LitemallCouponUser couponUser = new LitemallCouponUser();
                 couponUser.setCouponId(couponId);
                 couponUser.setUserId(userId);
@@ -43,8 +43,7 @@ public class CouponAssignService {
                 if (timeType.equals(CouponConstant.TIME_TYPE_TIME)) {
                     couponUser.setStartTime(coupon.getStartTime());
                     couponUser.setEndTime(coupon.getEndTime());
-                }
-                else{
+                } else {
                     LocalDateTime now = LocalDateTime.now();
                     couponUser.setStartTime(now);
                     couponUser.setEndTime(now.plusDays(coupon.getDays()));
@@ -56,5 +55,40 @@ public class CouponAssignService {
         }
 
     }
+
+    /**
+     * 分发充值优惠券
+     *
+     * 库存 total = 0，现在都是无限制的券。
+     */
+    public void assignForFund(Integer userId, Integer couponId, Integer number) {
+        LitemallCoupon coupon = couponService.findById(couponId);
+
+        Short limit = coupon.getLimit();
+        while (limit > 0 && number > 0) {
+
+            LitemallCouponUser couponUser = new LitemallCouponUser();
+            couponUser.setCouponId(couponId);
+            couponUser.setUserId(userId);
+            Short timeType = coupon.getTimeType();
+            if (timeType.equals(CouponConstant.TIME_TYPE_TIME)) {
+                couponUser.setStartTime(coupon.getStartTime());
+                couponUser.setEndTime(coupon.getEndTime());
+            } else {
+                LocalDateTime now = LocalDateTime.now();
+                couponUser.setStartTime(now);
+                couponUser.setEndTime(now.plusDays(coupon.getDays()));
+            }
+            couponUserService.add(couponUser);
+
+            limit--;
+            number--;
+        }
+
+//        coupon.setLimit(limit);
+//        coupon.setUpdateTime(LocalDateTime.now());
+//        couponService.updateById(coupon);
+    }
+
 
 }

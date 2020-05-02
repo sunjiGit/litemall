@@ -881,6 +881,7 @@ CREATE TABLE `litemall_account_flow` (
   `order_id` int(11) DEFAULT NULL COMMENT '订单ID',
   `subject` varchar(45) DEFAULT NULL COMMENT '账户流水描述',
   `status` varchar(16) DEFAULT NULL COMMENT '流水状态，SUBMIT-提交充值，CONFIRM-确认（充值/消费/红包），INVALID-作废',
+  `feature` varchar(256) DEFAULT NULL COMMENT '扩展字段（充值-优惠券）',
   `add_time` datetime DEFAULT NULL COMMENT '创建时间',
   `update_time` datetime DEFAULT NULL COMMENT '更新时间',
   `deleted` tinyint(1) DEFAULT NULL COMMENT '逻辑删除',
@@ -888,6 +889,7 @@ CREATE TABLE `litemall_account_flow` (
   UNIQUE KEY `uniq_flow_id` (`uniq_flow_id`),
   KEY `idx_user_id` (`user_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='账户流水表';
+
 
 DROP TABLE IF EXISTS `litemall_recharge_coupon_cfg`;
 CREATE TABLE `litemall_recharge_coupon_cfg` (

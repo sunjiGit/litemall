@@ -1,6 +1,7 @@
 package org.linlinjava.litemall.wx.vo;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 public class CouponVo {
     private Integer id;
@@ -92,5 +93,43 @@ public class CouponVo {
 
     public void setAvailable(boolean available) {
         this.available = available;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        CouponVo couponVo = (CouponVo) o;
+        return available == couponVo.available &&
+                Objects.equals(id, couponVo.id) &&
+                Objects.equals(cid, couponVo.cid) &&
+                Objects.equals(name, couponVo.name) &&
+                Objects.equals(desc, couponVo.desc) &&
+                Objects.equals(tag, couponVo.tag) &&
+                Objects.equals(min, couponVo.min) &&
+                Objects.equals(discount, couponVo.discount) &&
+                Objects.equals(startTime, couponVo.startTime) &&
+                Objects.equals(endTime, couponVo.endTime);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, cid, name, desc, tag, min, discount, startTime, endTime, available);
+    }
+
+    @Override
+    public String toString() {
+        return "CouponVo{" +
+                "id=" + id +
+                ", cid=" + cid +
+                ", name='" + name + '\'' +
+                ", desc='" + desc + '\'' +
+                ", tag='" + tag + '\'' +
+                ", min='" + min + '\'' +
+                ", discount='" + discount + '\'' +
+                ", startTime=" + startTime +
+                ", endTime=" + endTime +
+                ", available=" + available +
+                '}';
     }
 }

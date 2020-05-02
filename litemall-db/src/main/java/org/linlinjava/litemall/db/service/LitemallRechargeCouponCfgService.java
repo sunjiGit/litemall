@@ -11,6 +11,9 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.List;
 
+/**
+ * 充值配置服务
+ */
 @Service
 public class LitemallRechargeCouponCfgService {
 

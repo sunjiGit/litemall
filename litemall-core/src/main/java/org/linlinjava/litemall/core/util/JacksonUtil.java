@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.json.JSONArray;
 import org.linlinjava.litemall.db.domain.LitemallOrder;
 
 import java.io.IOException;
@@ -175,6 +176,14 @@ public class JacksonUtil {
         return null;
     }
 
+    public static JSONArray toJsonArray(String str) {
+        try {
+            return new JSONArray(str);
+        } catch (Exception e) {
+            // do nothing
+            return null;
+        }
+    }
 //    public static void main(String[] args) {
 //        List<LitemallOrder> orderList = new ArrayList<>();
 //

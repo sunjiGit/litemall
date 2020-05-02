@@ -58,6 +58,16 @@ public class LitemallCouponService {
         return couponMapper.selectByExampleSelective(criteria.example(), result);
     }
 
+    /**
+     * 查询，Ids
+     *
+     */
+    public List<LitemallCoupon> queryList(List<Integer> ids) {
+        LitemallCouponExample example = new LitemallCouponExample();
+        example.or().andIdIn(ids).andDeletedEqualTo(false);
+        return couponMapper.selectByExample(example);
+    }
+
     public List<LitemallCoupon> queryAvailableList(Integer userId, int offset, int limit) {
         assert userId != null;
         // 过滤掉登录账号已经领取过的coupon
@@ -79,6 +89,10 @@ public class LitemallCouponService {
         return couponMapper.selectByPrimaryKey(id);
     }
 
+
+    public LitemallCoupon findGoodById(Integer id) {
+        return couponMapper.selectByPrimaryKeyWithLogicalDelete(id, false);
+    }
 
     public LitemallCoupon findByCode(String code) {
         LitemallCouponExample example = new LitemallCouponExample();

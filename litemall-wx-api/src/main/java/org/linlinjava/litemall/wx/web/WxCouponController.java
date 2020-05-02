@@ -70,7 +70,7 @@ public class WxCouponController {
      * 个人优惠券列表
      *
      * @param userId
-     * @param status
+     * @param status 0=正常 1=过期 2=下架
      * @param page
      * @param limit
      * @param sort
