@@ -149,7 +149,7 @@ public class WxAccountController extends GetRegionService {
     /**
      * 获取固定 额度充值
      */
-    @PostMapping("listFundConfig")
+    @RequestMapping("listFundConfig")
     public Object listFundConfig(@LoginUser Integer userId,
                                  @RequestParam(defaultValue = "1") Integer page,
                                  @RequestParam(defaultValue = "10") Integer limit) {
@@ -236,7 +236,7 @@ public class WxAccountController extends GetRegionService {
      * @param configId 用户充值配置
      */
     @SuppressWarnings("unchecked")
-    @PostMapping("fundByConfig")
+    @RequestMapping("fundByConfig")
     public Object fundByConfig(@LoginUser Integer userId, @RequestParam Integer configId) {
         if (userId == null) {
             return ResponseUtil.unlogin();
