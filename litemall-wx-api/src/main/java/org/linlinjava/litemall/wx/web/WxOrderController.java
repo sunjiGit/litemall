@@ -55,15 +55,27 @@ public class WxOrderController {
     }
 
     /**
-     * 提交订单
+     * 提交订单 (增加门店维度)
      *
      * @param userId 用户ID
-     * @param body   订单信息，{ cartId：xxx, addressId: xxx, couponId: xxx, message: xxx, grouponRulesId: xxx,  grouponLinkId: xxx}
+     * @param body   订单信息，{ cartId：xxx, addressId: xxx, couponId: xxx, message: xxx, storeId: xxx}
      * @return 提交订单操作结果
      */
     @PostMapping("submit")
     public Object submit(@LoginUser Integer userId, @RequestBody String body) {
         return wxOrderService.submit(userId, body);
+    }
+
+    /**
+     * 直接提交订单 (增加门店维度)
+     *
+     * @param userId 用户ID
+     * @param body   订单信息，{ productId：xxx, productNum: xxx, addressId: xxx, couponId: xxx, message: xxx, storeId: xxx}
+     * @return 提交订单操作结果
+     */
+    @PostMapping("submitNoCart")
+    public Object submitNoCart(@LoginUser Integer userId, @RequestBody String body) {
+        return wxOrderService.submitNoCart(userId, body);
     }
 
     /**

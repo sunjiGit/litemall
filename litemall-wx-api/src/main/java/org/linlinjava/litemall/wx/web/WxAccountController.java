@@ -12,12 +12,10 @@ import org.linlinjava.litemall.core.system.SystemConfig;
 import org.linlinjava.litemall.core.util.JacksonUtil;
 import org.linlinjava.litemall.core.util.RandomUtil;
 import org.linlinjava.litemall.core.util.ResponseUtil;
-import org.linlinjava.litemall.db.domain.LitemallAccount;
-import org.linlinjava.litemall.db.domain.LitemallAccountFlow;
-import org.linlinjava.litemall.db.domain.LitemallCoupon;
-import org.linlinjava.litemall.db.domain.LitemallRechargeCouponCfg;
+import org.linlinjava.litemall.db.domain.*;
 import org.linlinjava.litemall.db.enums.account.AccountFlowStatus;
 import org.linlinjava.litemall.db.enums.account.AccountFlowType;
+import org.linlinjava.litemall.db.enums.user.UserLevel;
 import org.linlinjava.litemall.db.service.*;
 import org.linlinjava.litemall.wx.annotation.LoginUser;
 import org.linlinjava.litemall.wx.service.GetRegionService;
@@ -56,6 +54,8 @@ public class WxAccountController extends GetRegionService {
     private LitemallCouponService couponService;
     @Autowired
     private CouponAssignService couponAssignService;
+    @Autowired
+    private LitemallUserService litemallUserService;
 
     /**
      * 账户概览
@@ -320,6 +320,15 @@ public class WxAccountController extends GetRegionService {
         flow.setStatus(AccountFlowStatus.CONFIRM.getCode());
         flow.setUpdateTime(LocalDateTime.now());
         accountService.confirmAccountFlowAndBalance(flow);
+
+        // 用户等级 user_level to recharge level
+        if (AccountFlowType.RECHARGE.getCode().equalsIgnoreCase(flow.getType())) {
+            LitemallUser user = litemallUserService.findById(flow.getUserId());
+            if (UserLevel.NORMAL.getCode() == user.getUserLevel().intValue()) {
+                user.setUserLevel(Byte.valueOf("" + UserLevel.RECHARGE.getCode()));
+                litemallUserService.updateById(user);
+            }
+        }
 
         // 发送代金券
         if (StringUtils.isEmpty(flow.getFeature())) {

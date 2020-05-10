@@ -81,4 +81,59 @@ public class CouponVerifyService {
         return coupon;
     }
 
+    /**
+     * 检测优惠券是否适合
+     *
+     * @param userCouponId
+     * @param checkedGoodsPrice
+     * @return
+     */
+    public LitemallCoupon checkUserCoupon(Integer userCouponId, BigDecimal checkedGoodsPrice) {
+        LitemallCouponUser couponUser = couponUserService.findById(userCouponId);
+        if (couponUser == null) {
+            return null;
+        }
+
+        LitemallCoupon coupon = couponService.findById(couponUser.getCouponId());
+        if (coupon == null) {
+            return null;
+        }
+
+        // 检查是否超期
+        Short timeType = coupon.getTimeType();
+        Short days = coupon.getDays();
+        LocalDateTime now = LocalDateTime.now();
+        if (timeType.equals(CouponConstant.TIME_TYPE_TIME)) {
+            if (now.isBefore(coupon.getStartTime()) || now.isAfter(coupon.getEndTime())) {
+                return null;
+            }
+        } else if(timeType.equals(CouponConstant.TIME_TYPE_DAYS)) {
+            LocalDateTime expired = couponUser.getAddTime().plusDays(days);
+            if (now.isAfter(expired)) {
+                return null;
+            }
+        } else {
+            return null;
+        }
+
+        // 检测商品是否符合
+        // TODO 目前仅支持全平台商品，所以不需要检测
+        Short goodType = coupon.getGoodsType();
+        if (!goodType.equals(CouponConstant.GOODS_TYPE_ALL)) {
+            return null;
+        }
+
+        // 检测优惠券状态
+        Short status = coupon.getStatus();
+        if (!status.equals(CouponConstant.STATUS_NORMAL)) {
+            return null;
+        }
+        // 检测是否满足最低消费
+        if (checkedGoodsPrice.compareTo(coupon.getMin()) == -1) {
+            return null;
+        }
+
+        return coupon;
+    }
+
 }
