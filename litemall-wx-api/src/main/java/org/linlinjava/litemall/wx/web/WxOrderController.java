@@ -70,12 +70,12 @@ public class WxOrderController {
      * 直接提交订单 (增加门店维度)
      *
      * @param userId 用户ID
-     * @param body   订单信息，{ productId：xxx, productNum: xxx, addressId: xxx, couponId: xxx, message: xxx, storeId: xxx}
+     * @param body   订单信息，{ products: [{productId: xxx, productNum: xxx}], addressId: xxx, couponId: xxx, message: xxx, storeId: xxx}
      * @return 提交订单操作结果
      */
-    @PostMapping("submitNoCart")
-    public Object submitNoCart(@LoginUser Integer userId, @RequestBody String body) {
-        return wxOrderService.submitNoCart(userId, body);
+    @PostMapping("submitProducts")
+    public Object submitProducts(@LoginUser Integer userId, @RequestBody String body) {
+        return wxOrderService.submitProducts(userId, body);
     }
 
     /**
@@ -89,6 +89,19 @@ public class WxOrderController {
     public Object cancel(@LoginUser Integer userId, @RequestBody String body) {
         return wxOrderService.cancel(userId, body);
     }
+
+    /**
+     * 账户付款订单
+     *
+     * @param userId 用户ID
+     * @param body   订单信息，{ orderId：xxx }
+     * @return 支付订单ID
+     */
+    @PostMapping("accountPay")
+    public Object accountPay(@LoginUser Integer userId, @RequestBody String body, HttpServletRequest request) {
+        return wxOrderService.accountPay(userId, body, request);
+    }
+
 
     /**
      * 付款订单的预支付会话标识

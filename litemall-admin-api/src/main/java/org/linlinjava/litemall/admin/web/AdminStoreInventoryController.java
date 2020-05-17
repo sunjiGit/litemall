@@ -32,7 +32,7 @@ public class AdminStoreInventoryController {
     @RequiresPermissions("admin:store:list")
     @RequiresPermissionsDesc(menu = {"门店管理", "门店库存管理"}, button = "输入")
     @PostMapping("/add")
-    @ApiOperation(value = "增加门店库存商品数量  门店=storeId 商品=goodsId 操作=operateType:MAKE-IN 数量=amount 操作人=operator")
+    @ApiOperation(value = "增加门店库存商品数量  门店=storeId 商品=goodsId 产品=productId 操作=operateType:MAKE-IN 数量=amount 操作人=operator")
     public Object add(@RequestBody LitemallStoreInventoryFlow flow) {
         logger.info(String.format("add flow:%s", flow));
         StoreInventoryOperateType flowType = StoreInventoryOperateType.getByCode(flow.getOperateType());
@@ -50,7 +50,7 @@ public class AdminStoreInventoryController {
     @RequiresPermissions("admin:store:list")
     @RequiresPermissionsDesc(menu = {"门店管理", "门店库存管理"}, button = "查询")
     @GetMapping("/detail")
-    @ApiOperation(value = "查看门店库存 门店=storeId，返回对象有 goods_name")
+    @ApiOperation(value = "查看门店库存 门店=storeId，返回对象有 goods_name product_id")
     public Object detail(@NotNull Integer storeId) {
         logger.info(String.format("detail id:%d", storeId));
         return ResponseUtil.okList(storeInventoryService.findByStoreId(storeId));
@@ -62,7 +62,7 @@ public class AdminStoreInventoryController {
     @RequiresPermissions("admin:store:list")
     @RequiresPermissionsDesc(menu = {"门店管理", "门店库存管理"}, button = "调整")
     @PostMapping("/adjust")
-    @ApiOperation(value = "调整库存 门店=storeId 商品=goodsId 操作=operateType:ADJUST_OUT-调整减少 ADJUST_IN-调整增加, " +
+    @ApiOperation(value = "调整库存 门店=storeId 商品=goodsId 产品=productId 操作=operateType:ADJUST_OUT-调整减少 ADJUST_IN-调整增加, " +
             "数量=amount 操作人=operator")
     public Object adjust(@RequestBody LitemallStoreInventoryFlow flow) {
         logger.info(String.format("adjust flow:%s", flow));

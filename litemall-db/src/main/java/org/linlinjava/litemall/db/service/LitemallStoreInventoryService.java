@@ -40,6 +40,12 @@ public class LitemallStoreInventoryService {
         return inventoryMapper.selectOneByExample(example);
     }
 
+    public LitemallStoreInventory findByStoreIdAndProductId(Integer storeId, Integer productId) {
+        LitemallStoreInventoryExample example = new LitemallStoreInventoryExample();
+        example.or().andStoreIdEqualTo(storeId).andProductIdEqualTo(productId);
+        return inventoryMapper.selectOneByExample(example);
+    }
+
     public void plusFlow(LitemallStoreInventoryFlow flow) {
         LitemallStoreInventoryExample example = new LitemallStoreInventoryExample();
         example.or().andStoreIdEqualTo(flow.getStoreId()).andGoodsIdEqualTo(flow.getGoodsId());

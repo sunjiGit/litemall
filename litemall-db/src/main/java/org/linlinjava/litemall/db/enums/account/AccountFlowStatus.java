@@ -3,7 +3,7 @@ package org.linlinjava.litemall.db.enums.account;
 public enum AccountFlowStatus {
 
     SUBMIT("SUBMIT", "提交充值"),
-    CONFIRM("CONFIRM", "确认充值"),
+    CONFIRM("CONFIRM", "确认充值/确认消费"),
     INVALID("INVALID", "作废"),
     ;
 

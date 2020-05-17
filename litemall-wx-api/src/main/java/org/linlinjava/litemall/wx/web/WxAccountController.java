@@ -19,6 +19,7 @@ import org.linlinjava.litemall.db.enums.user.UserLevel;
 import org.linlinjava.litemall.db.service.*;
 import org.linlinjava.litemall.wx.annotation.LoginUser;
 import org.linlinjava.litemall.wx.service.GetRegionService;
+import org.linlinjava.litemall.wx.util.PayUtil;
 import org.linlinjava.litemall.wx.vo.FundCouponConfigVo;
 import org.linlinjava.litemall.wx.vo.FundCouponVo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -117,15 +118,8 @@ public class WxAccountController extends GetRegionService {
             logger.info("flow accountId is null or accountId <= 0.");
             return ResponseUtil.badArgument();
         }
-        // 账户流水 uid + timestamp
-        // 微信支付
-        String uniqFlowId = String.format("%d-%d-%s-%d",
-                userId,
-                AccountFlowType.RECHARGE.getOrder(),
-                LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss")),
-                (long) (Math.random() * 10000)
-        );
 
+        String uniqFlowId = PayUtil.uniqFlowId(userId, AccountFlowType.RECHARGE);
         // 充值金额，
         // 充值账户，
         // 充值业务流水，
@@ -252,12 +246,7 @@ public class WxAccountController extends GetRegionService {
 
         // 账户流水 uid + timestamp
         // 微信支付
-        String uniqFlowId = String.format("%d-%d-%s-%d",
-                userId,
-                AccountFlowType.RECHARGE.getOrder(),
-                LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss")),
-                (long) (Math.random() * 10000)
-        );
+        String uniqFlowId = PayUtil.uniqFlowId(userId, AccountFlowType.RECHARGE);
 
         // 充值金额，
         // 充值账户，
@@ -378,14 +367,7 @@ public class WxAccountController extends GetRegionService {
             return ResponseUtil.badArgument();
         }
 
-        // 账户流水 uid + timestamp
-        // 微信支付
-        String uniqFlowId = String.format("%d-%d-%s-%d",
-                userId,
-                AccountFlowType.RED_ENVELOPE.getOrder(),
-                LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss")),
-                (long) (Math.random() * 10000)
-        );
+        String uniqFlowId = PayUtil.uniqFlowId(userId, AccountFlowType.RED_ENVELOPE);
         LitemallAccount account = accountService.queryOrCreateByUid(userId);
 
         flow = new LitemallAccountFlow();
