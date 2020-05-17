@@ -10,6 +10,7 @@ import com.github.binarywang.wxpay.constant.WxPayConstants;
 import com.github.binarywang.wxpay.exception.WxPayException;
 import com.github.binarywang.wxpay.service.WxPayService;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.linlinjava.litemall.core.express.ExpressService;
@@ -27,10 +28,12 @@ import org.linlinjava.litemall.db.util.CouponUserConstant;
 import org.linlinjava.litemall.db.util.OrderHandleOption;
 import org.linlinjava.litemall.db.util.OrderUtil;
 import org.linlinjava.litemall.core.util.IpUtil;
+import org.linlinjava.litemall.wx.vo.params.OrderProductsVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
+import org.springframework.util.CollectionUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -381,30 +384,32 @@ public class WxOrderService {
      * 4. 商品货品库存减少;
      *
      * @param userId 用户ID
-     * @param body   订单信息，{ productId：xxx, productNum: xxx, addressId: xxx, userCouponId: xxx, message: xxx, storeId: xxx}
+     * @param body   订单信息，{ products: [{productId：xxx, productNum: xxx}], addressId: xxx, userCouponId: xxx, message: xxx, storeId: xxx}
      * @return 提交订单操作结果
      */
     @Transactional
-    public Object submitNoCart(Integer userId, String body) {
+    public Object submitProducts(Integer userId, String body) {
         if (userId == null) {
+            logger.info(String.format("userId is null. userId=%s, body=%s", userId, body));
             return ResponseUtil.unlogin();
         }
-        if (body == null) {
+        if (StringUtils.isBlank(body)) {
+            logger.info(String.format("body is null. userId=%s, body=%s", userId, body));
             return ResponseUtil.badArgument();
         }
-        Integer productId = JacksonUtil.parseInteger(body, "productId");
-        Integer productNum = JacksonUtil.parseInteger(body, "productNum");
+        List<OrderProductsVo> products = JacksonUtil.parseObjectList(body, "products");
         Integer addressId = JacksonUtil.parseInteger(body, "addressId");
         Integer userCouponId = JacksonUtil.parseInteger(body, "userCouponId");
         String message = JacksonUtil.parseString(body, "message");
         Integer storeId = JacksonUtil.parseInteger(body, "storeId");
 
-        // 门店是否有货物
-        // TODO finishme
-
-        if (productNum == null) {
+        if (CollectionUtils.isEmpty(products)) {
+            logger.info(String.format("products is null. userId=%s, body=%s", userId, body));
             return ResponseUtil.badArgument();
         }
+
+        // 门店是否有货物
+//        门店 产品 库存表
 
         // 收货地址
         LitemallAddress checkedAddress = addressService.query(userId, addressId);
@@ -412,7 +417,10 @@ public class WxOrderService {
             return ResponseUtil.badArgument();
         }
 
-        // 货品价格
+        // 货品价格 TODO
+        Integer productId = products.get(0).getProductId();
+        Integer productNum = products.get(0).getProductNum();
+
         LitemallGoodsProduct product = productService.findById(productId);
         BigDecimal checkedGoodsPrice = product.getPrice().multiply(new BigDecimal(productNum));
 
@@ -800,51 +808,51 @@ public class WxOrderService {
         }
 
         //  支付成功，有团购信息，更新团购信息
-        LitemallGroupon groupon = grouponService.queryByOrderId(order.getId());
-        if (groupon != null) {
-            LitemallGrouponRules grouponRules = grouponRulesService.queryById(groupon.getRulesId());
-
-            //仅当发起者才创建分享图片
-            if (groupon.getGrouponId() == 0) {
-                String url = qCodeService.createGrouponShareImage(grouponRules.getGoodsName(), grouponRules.getPicUrl(), groupon);
-                groupon.setShareUrl(url);
-            }
-            groupon.setPayed(true);
-            if (grouponService.updateById(groupon) == 0) {
-                return WxPayNotifyResponse.fail("更新数据已失效");
-            }
-
-            // 团购已达成，更新关联订单支付状态
-            if (groupon.getGrouponId() > 0) {
-                List<LitemallGroupon> grouponList = grouponService.queryJoinRecord(groupon.getGrouponId());
-                if (grouponList.size() >= grouponRules.getDiscountMember() - 1) {
-                    for (LitemallGroupon grouponActivity : grouponList) {
-                        if (grouponActivity.getOrderId().equals(order.getId())) {
-                            //当前订单
-                            continue;
-                        }
-
-                        LitemallOrder grouponOrder = orderService.findById(grouponActivity.getOrderId());
-                        if (grouponOrder.getOrderStatus().equals(OrderUtil.STATUS_PAY_GROUPON)) {
-                            grouponOrder.setOrderStatus(OrderUtil.STATUS_PAY);
-                            orderService.updateWithOptimisticLocker(grouponOrder);
-                        }
-                    }
-
-                    LitemallGroupon grouponSource = grouponService.queryById(groupon.getGrouponId());
-                    LitemallOrder grouponOrder = orderService.findById(grouponSource.getOrderId());
-                    if (grouponOrder.getOrderStatus().equals(OrderUtil.STATUS_PAY_GROUPON)) {
-                        grouponOrder.setOrderStatus(OrderUtil.STATUS_PAY);
-                        orderService.updateWithOptimisticLocker(grouponOrder);
-                    }
-                }
-
-            } else {
-                order = orderService.findBySn(orderSn);
-                order.setOrderStatus(OrderUtil.STATUS_PAY_GROUPON);
-                orderService.updateWithOptimisticLocker(order);
-            }
-        }
+//        LitemallGroupon groupon = grouponService.queryByOrderId(order.getId());
+//        if (groupon != null) {
+//            LitemallGrouponRules grouponRules = grouponRulesService.queryById(groupon.getRulesId());
+//
+//            //仅当发起者才创建分享图片
+//            if (groupon.getGrouponId() == 0) {
+//                String url = qCodeService.createGrouponShareImage(grouponRules.getGoodsName(), grouponRules.getPicUrl(), groupon);
+//                groupon.setShareUrl(url);
+//            }
+//            groupon.setPayed(true);
+//            if (grouponService.updateById(groupon) == 0) {
+//                return WxPayNotifyResponse.fail("更新数据已失效");
+//            }
+//
+//            // 团购已达成，更新关联订单支付状态
+//            if (groupon.getGrouponId() > 0) {
+//                List<LitemallGroupon> grouponList = grouponService.queryJoinRecord(groupon.getGrouponId());
+//                if (grouponList.size() >= grouponRules.getDiscountMember() - 1) {
+//                    for (LitemallGroupon grouponActivity : grouponList) {
+//                        if (grouponActivity.getOrderId().equals(order.getId())) {
+//                            //当前订单
+//                            continue;
+//                        }
+//
+//                        LitemallOrder grouponOrder = orderService.findById(grouponActivity.getOrderId());
+//                        if (grouponOrder.getOrderStatus().equals(OrderUtil.STATUS_PAY_GROUPON)) {
+//                            grouponOrder.setOrderStatus(OrderUtil.STATUS_PAY);
+//                            orderService.updateWithOptimisticLocker(grouponOrder);
+//                        }
+//                    }
+//
+//                    LitemallGroupon grouponSource = grouponService.queryById(groupon.getGrouponId());
+//                    LitemallOrder grouponOrder = orderService.findById(grouponSource.getOrderId());
+//                    if (grouponOrder.getOrderStatus().equals(OrderUtil.STATUS_PAY_GROUPON)) {
+//                        grouponOrder.setOrderStatus(OrderUtil.STATUS_PAY);
+//                        orderService.updateWithOptimisticLocker(grouponOrder);
+//                    }
+//                }
+//
+//            } else {
+//                order = orderService.findBySn(orderSn);
+//                order.setOrderStatus(OrderUtil.STATUS_PAY_GROUPON);
+//                orderService.updateWithOptimisticLocker(order);
+//            }
+//        }
 
         //TODO 发送邮件和短信通知，这里采用异步发送
         // 订单支付成功以后，会发送短信给用户，以及发送邮件给管理员
@@ -863,6 +871,9 @@ public class WxOrderService {
         };
 
         notifyService.notifyWxTemplate(result.getOpenid(), NotifyType.PAY_SUCCEED, parms, "pages/index/index?orderId=" + order.getId());
+
+        // 订单支付成功后 打印订单 到对应订单的门店打印机上。
+        // 订单信息同步发到 门店后端，门店后端 发起服务。
 
         return WxPayNotifyResponse.success("处理成功!");
     }

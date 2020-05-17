@@ -734,14 +734,14 @@ CREATE TABLE `litemall_store_inventory` (
   `store_id` int(11) unsigned NOT NULL COMMENT '门店ID',
   `goods_id` int(11) unsigned NOT NULL COMMENT '商品ID',
   `goods_name` varchar(45) DEFAULT NULL COMMENT '商品名称',
+  `product_id` int(11) NOT NULL COMMENT '产品ID',
   `amount` int(8) DEFAULT NULL COMMENT '库存数量',
   `add_time` datetime DEFAULT NULL COMMENT '创建时间',
   `update_time` datetime DEFAULT NULL COMMENT '更新时间',
   `deleted` tinyint(1) DEFAULT '0' COMMENT '逻辑删除',
   PRIMARY KEY (`id`),
-  UNIQUE KEY `uniq_store_id_goods_id` (`store_id`,`goods_id`),
-  KEY `idx_store_id_goods_id` (`store_id`,`goods_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='门店产品库存';
+  KEY `uniq_store_id_product_id` (`store_id`,`product_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='门店产品库存';
 
 --
 -- Table structure for table `litemall_store_inventory_flow`
@@ -752,14 +752,36 @@ CREATE TABLE `litemall_store_inventory_flow` (
   `inventory_id` int(11) unsigned NOT NULL COMMENT '门店库存ID',
   `store_id` int(11) DEFAULT NULL COMMENT '门店ID 冗余',
   `goods_id` int(11) DEFAULT NULL COMMENT '商品ID 冗余',
+  `product_id` int(11) NOT NULL COMMENT '产品ID',
   `operate_type` varchar(16) NOT NULL COMMENT '操作类型：MAKE_IN 制作输入；ORDER_OUT 订单输出；MANU_IN 调整输入；MANU_OUT 调整输出。',
+  `order_id` int(11) DEFAULT NULL COMMENT '订单ID',
   `amount` int(8) NOT NULL COMMENT '数量，正负表示增减',
   `operator` varchar(45) DEFAULT NULL COMMENT '操作员',
   `add_time` datetime DEFAULT NULL COMMENT '创建时间',
   `update_time` datetime DEFAULT NULL COMMENT '修改时间',
   `deleted` tinyint(1) DEFAULT '0' COMMENT '逻辑删除',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='门店产品库存流水表'
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='门店产品库存流水表';
+
+
+DROP TABLE IF EXISTS `litemall_store_product_inventory`;
+CREATE TABLE `litemall_store_product_inventory` (
+  `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '主键',
+  `store_id` int(11) NOT NULL COMMENT '门店ID',
+  `goods_id` int(11) DEFAULT NULL COMMENT '货品ID',
+  `goods_name` varchar(45) DEFAULT NULL COMMENT '货品名称',
+  `product_id` int(11) NOT NULL COMMENT '产品ID',
+  `product_desc` varchar(128) DEFAULT NULL COMMENT '产品描述',
+  `effect_start_time` datetime NOT NULL COMMENT '有效期-开始',
+  `effect_end_time` datetime NOT NULL COMMENT '有效期-结束',
+  `amount` int(8) NOT NULL COMMENT '数量',
+  `add_time` datetime DEFAULT NULL COMMENT '添加时间',
+  `update_time` datetime DEFAULT NULL COMMENT '更新时间',
+  `deleted` tinyint(1) DEFAULT '0' COMMENT '逻辑删除',
+  PRIMARY KEY (`id`),
+  KEY `uniq_store_id_product_id` (`store_id`,`product_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='门店产品库存表';
+
 --
 -- Table structure for table `litemall_system`
 --

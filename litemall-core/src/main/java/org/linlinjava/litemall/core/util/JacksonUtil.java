@@ -140,6 +140,21 @@ public class JacksonUtil {
         return null;
     }
 
+    public static <T> List<T> parseObjectList(String body, String field) {
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode node;
+        try {
+            node = mapper.readTree(body);
+            JsonNode leaf = node.get(field);
+
+            if (leaf != null)
+                return mapper.convertValue(leaf, new TypeReference<List<T>>() {});
+        } catch (IOException e) {
+            logger.error(e.getMessage(), e);
+        }
+        return null;
+    }
+
     public static Object toNode(String json) {
         if (json == null) {
             return null;
@@ -184,22 +199,5 @@ public class JacksonUtil {
             return null;
         }
     }
-//    public static void main(String[] args) {
-//        List<LitemallOrder> orderList = new ArrayList<>();
-//
-//        LitemallOrder order1 = new LitemallOrder();
-//        order1.setId(1);
-//        order1.setAddress("address");
-//        order1.setAddTime(LocalDateTime.now());
-//
-//        LitemallOrder order2 = new LitemallOrder();
-//        order2.setId(2);
-//        order2.setAddress("address2");
-//        order2.setAddTime(LocalDateTime.now());
-//
-//        orderList.add(order1);
-//        orderList.add(order2);
-//
-//        System.out.println(toJson(orderList));
-//    }
+
 }
