@@ -123,3 +123,11 @@ litemall:
       accessKey: 111111
       secretKey: xxxxxx
       bucketName: litemall
+
+  #云打印机配置
+  printer:
+    jiabo:
+      memberCode: "7e8a8dfbe94c42ef824772c27cd66d18"
+      apiKey: "NDA9HSGC"
+      sendUrl: "http://api.poscom.cn/apisc/sendMsg"
+      queryUrl: "http://api.poscom.cn/apisc/queryState"

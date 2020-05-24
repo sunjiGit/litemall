@@ -22,6 +22,19 @@ public class StoreTest {
     private LitemallStoreService storeService;
 
     @Test
+    public void testPrinterCode() {
+        Integer storeId = 1;
+        LitemallStore store = storeService.findById(storeId);
+
+        String printerCode = "00391282551212082";
+        store.setOrderPrinterCode(printerCode);
+        store.setPreparePrinterCode(printerCode);
+        store.setUpdateTime(LocalDateTime.now());
+
+        storeService.updateById(store);
+    }
+
+    @Test
     public void testStoreOperator() {
         List<LitemallStore> list = storeService.all();
         System.out.println("list=" + list);

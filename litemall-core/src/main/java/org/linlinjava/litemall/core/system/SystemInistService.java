@@ -122,6 +122,12 @@ class SystemInistService {
                 SystemConfig.getNewLimit() + "," + SystemConfig.getHotLimit() + "," + SystemConfig.getBrandLimit() +
                         "," + SystemConfig.getTopicLimit() + "," + SystemConfig.getCatlogListLimit() + "," + SystemConfig.getCatlogMoreLimit());
 
+        // 打印机相关信息
+        infos.put(SystemInfoPrinter.CREATE_PART_COPPER + 4, "云打印机相关");
+        infos.put("佳博商户码", environment.getProperty("litemall.printer.jiabo.memberCode"));
+        infos.put("佳博商户API_KEY", environment.getProperty("litemall.printer.jiabo.apiKey"));
+        infos.put("佳博云打印机BASE_URL", environment.getProperty("litemall.printer.jiabo.baseUrl"));
+
         return infos;
     }
 }

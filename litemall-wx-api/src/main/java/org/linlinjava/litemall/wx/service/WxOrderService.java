@@ -33,6 +33,7 @@ import org.linlinjava.litemall.core.util.IpUtil;
 import org.linlinjava.litemall.wx.util.PayUtil;
 import org.linlinjava.litemall.wx.vo.params.OrderProductsVo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
@@ -119,6 +120,17 @@ public class WxOrderService {
     private LitemallStoreInventoryService storeInventoryService;
     @Autowired
     private LitemallAccountService accountService;
+    @Autowired
+    private LitemallStoreService storeService;
+
+    private final ThreadPoolTaskExecutor poolTaskExecutor = new ThreadPoolTaskExecutor();
+
+    {
+        poolTaskExecutor.setCorePoolSize(2);
+        poolTaskExecutor.setMaxPoolSize(16);
+        poolTaskExecutor.setKeepAliveSeconds(200);
+        poolTaskExecutor.setQueueCapacity(50);
+    }
 
     /**
      * 订单列表
@@ -325,6 +337,7 @@ public class WxOrderService {
         order.setIntegralPrice(integralPrice);
         order.setOrderPrice(orderTotalPrice);
         order.setActualPrice(actualPrice);
+        order.setStoreId(storeId);
 
         // 添加订单表项
         orderService.add(order);
@@ -471,7 +484,7 @@ public class WxOrderService {
         order.setCouponPrice(couponPrice);
         order.setOrderPrice(orderTotalPrice);
         order.setActualPrice(orderTotalPrice);
-//    TODO    order.setStoreId(storeId);
+        order.setStoreId(storeId);
 
         // 添加订单表项
         orderService.add(order);
@@ -639,11 +652,17 @@ public class WxOrderService {
             return ResponseUtil.fail(ORDER_PAY_FAIL, "订单状态更新失败");
         }
 
-        // 门店 ？ TODO 订单需要和门店关联。
-
+        // 门店ID
+        Integer storeId = order.getStoreId();
         // 订单支付成功后 打印订单 到对应订单的门店打印机上。
-        // 订单信息同步发到 门店后端，门店后端 发起服务。
+        poolTaskExecutor.execute(new Runnable() {
+            @Override
+            public void run() {
+                storeService.findById(storeId);
+            }
+        });
 
+        // 订单信息同步发到 门店后端，门店后端 发起服务。
         return WxPayNotifyResponse.success("处理成功!");
     }
 

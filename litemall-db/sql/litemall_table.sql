@@ -542,6 +542,7 @@ DROP TABLE IF EXISTS `litemall_order`;
 CREATE TABLE `litemall_order` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `user_id` int(11) NOT NULL COMMENT '用户表的用户ID',
+  `store_id` int(11) DEFAULT NULL COMMENT '门店ID',
   `order_sn` varchar(63) NOT NULL COMMENT '订单编号',
   `order_status` smallint(6) NOT NULL COMMENT '订单状态',
   `consignee` varchar(63) NOT NULL COMMENT '收货人名称',
@@ -550,11 +551,12 @@ CREATE TABLE `litemall_order` (
   `message` varchar(512) NOT NULL DEFAULT '' COMMENT '用户订单留言',
   `goods_price` decimal(10,2) NOT NULL COMMENT '商品总费用',
   `freight_price` decimal(10,2) NOT NULL COMMENT '配送费用',
+  `discount_price` decimal(10,2) DEFAULT NULL COMMENT '用户折扣优惠价（根据用户等级），扣减的价格',
   `coupon_price` decimal(10,2) NOT NULL COMMENT '优惠券减免',
   `integral_price` decimal(10,2) NOT NULL COMMENT '用户积分减免',
   `groupon_price` decimal(10,2) NOT NULL COMMENT '团购优惠价减免',
   `order_price` decimal(10,2) NOT NULL COMMENT '订单费用， = goods_price + freight_price - coupon_price',
-  `actual_price` decimal(10,2) NOT NULL COMMENT '实付费用， = order_price - integral_price',
+  `actual_price` decimal(10,2) NOT NULL COMMENT '实付费用， = order_price - integral_price - coupon_price',
   `pay_id` varchar(63) DEFAULT NULL COMMENT '微信付款编号',
   `pay_time` datetime DEFAULT NULL COMMENT '微信付款时间',
   `ship_sn` varchar(63) DEFAULT NULL COMMENT '发货编号',
@@ -564,7 +566,7 @@ CREATE TABLE `litemall_order` (
   `comments` smallint(6) DEFAULT '0' COMMENT '待评价订单商品数量',
   `end_time` datetime DEFAULT NULL COMMENT '订单关闭时间',
   `group_ordered` tinyint(1) DEFAULT '0' COMMENT '是否拼单（0否，1是）',
-  `group_order_id` int(11) NOT NULL COMMENT '拼单ID',
+  `group_order_id` int(11) DEFAULT NULL COMMENT '拼单ID',
   `add_time` datetime DEFAULT NULL COMMENT '创建时间',
   `update_time` datetime DEFAULT NULL COMMENT '更新时间',
   `deleted` tinyint(1) DEFAULT '0' COMMENT '逻辑删除',
@@ -718,11 +720,13 @@ CREATE TABLE `litemall_store` (
   `status` varchar(16) DEFAULT NULL COMMENT '门店状态：WORKING-营业中，STOP-打烊',
   `city_no` int(11) DEFAULT NULL COMMENT '门店所在城市的序号（开店号）',
   `order_start_seq` int(11) DEFAULT NULL COMMENT '门店取餐码 初始号',
+  `order_printer_code` varchar(64) DEFAULT NULL COMMENT '订单打印机编号',
+  `prepare_printer_code` varchar(64) DEFAULT NULL COMMENT '后厨打印机编号',
   `add_time` datetime DEFAULT NULL COMMENT '创建时间',
   `update_time` datetime DEFAULT NULL COMMENT '更新时间',
   `deleted` tinyint(1) DEFAULT '0' COMMENT '逻辑删除 0=未删 1=已删',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COMMENT='门店表';
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COMMENT='门店表';
 
 
 --
