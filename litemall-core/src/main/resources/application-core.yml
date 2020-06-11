@@ -43,8 +43,8 @@ litemall:
         appkey: xxxxxxxxxxxxxx
       aliyun:
         regionId: cn-hangzhou
-        accessKeyId: LTAI4Fg71dD5LDzRkrVxY6xJ
-        accessKeySecret: YRkqDKW7ofpBbr1TtbNdvJbHYr2oX5
+        accessKeyId: 11111111111
+        accessKeySecret: 11111111111
 
 
     # 微信模版通知配置
